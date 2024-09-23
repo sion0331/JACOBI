@@ -7,19 +7,19 @@ def diff2(x, t):
     return np.gradient(np.gradient(x, t), t)
 
 def eq_0(X, betas, t):
-    # dx_1/dt = exp(x_1(t))*sin(x_3(t)**2)/sin(x_3(t))**2
+    # dx_1/dt = x_1(t)/(cos(x_2(t))*cos(x_3(t)))
     x_1, x_2, x_3, x_4, x_5 = X
-    return betas[0] * (np.sin(x_3)**(-2)) + betas[1] * (np.exp(x_1)) + betas[2] * (np.sin(x_3**2))
+    return betas[0] * (1/np.cos(x_2)) + betas[1] * (1/np.cos(x_3)) + betas[2] * (x_1)
 
 def eq_1(X, betas, t):
-    # dx_2/dt = exp(-sin(x_3(t)))*cos(x_1(t))*cos(cos(x_2(t)))
+    # dx_2/dt = x_1(t)*exp(x_1(t))*exp(x_3(t))
     x_1, x_2, x_3, x_4, x_5 = X
-    return betas[0] * (np.cos(np.cos(x_2))) + betas[1] * (np.cos(x_1)) + betas[2] * (np.exp(-np.sin(x_3)))
+    return betas[0] * (np.exp(x_1)) + betas[1] * (np.exp(x_3)) + betas[2] * (x_1)
 
 def eq_2(X, betas, t):
-    # dx_3/dt = exp(-x_2(t)**2)*exp(cos(x_2(t)))*sin(x_3(t))**2
+    # dx_3/dt = x_2(t)*exp(x_1(t))*exp(-x_2(t))
     x_1, x_2, x_3, x_4, x_5 = X
-    return betas[0] * (np.sin(x_3)**2) + betas[1] * (np.exp(-x_2**2)) + betas[2] * (np.exp(np.cos(x_2)))
+    return betas[0] * (np.exp(-x_2)) + betas[1] * (np.exp(x_1)) + betas[2] * (x_2)
 
 def system(X, betas, t):
     return np.array([eq_0(X, betas, t), eq_1(X, betas, t), eq_2(X, betas, t)])
