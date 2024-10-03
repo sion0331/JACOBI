@@ -45,7 +45,7 @@ def get_allowed_functions():
         print(f"{key}: {name}")
 
     # allowed_functions = input("Enter the numbers of the functions you want to allow (comma-separated): ")
-    allowed_functions = "1,2,4,5,6"
+    allowed_functions = "5"
     return [int(x.strip()) for x in allowed_functions.split(',')]
 
 def f(i):
