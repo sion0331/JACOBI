@@ -1,7 +1,7 @@
 import random as rd
 import sympy as sp
 from symbolic_utils import t, create_variable, o
-from functions import f, one
+from functions import f
 
 
 def generate_systems(N, M, I, J, fOps, allow_composite=True):
@@ -13,26 +13,28 @@ def generate_systems(N, M, I, J, fOps, allow_composite=True):
         for m in range(M):
             terms = []
             for i in range(I):
-                term = one(1)
+                var_list=[]
+                rd.shuffle(variables) # O(logN)
+                j = 0
                 for var in variables:
-                    if rd.randint(0, 1) == 1:  # todo - better logic
+                    if rd.randint(0, 1) == 1:
                         func = f(rd.choice(fOps))
-                        temp = func(var)
-                        if allow_composite:
-                            for j in range(J - 1):
+                        var = func(var)
+                        j += 1
+                        if allow_composite and j<J: # limit applying composite to only once
+                            if rd.randint(0, 1) == 1:
                                 func = f(rd.choice(fOps))
-                                temp = func(temp)
+                                var = func(var)
+                                j+=1
+                        var_list.append(var)
+                        if j==J: break
 
-                        operator = o(rd.randint(0, 3)) # multiplication / division
-                        term = operator(term, temp)
-                terms.append(term)
-
-
-            # equation = terms[0]
-            # for term in terms[1:]:
-            #     operator = o(rd.randint(2, 3))  # addition/subtraction
-            #     equation = operator(equation, term)
-            # equations.append(sp.Eq(sp.diff(variables[m], t), equation))
+                if var_list:
+                    term = var_list[0]
+                    for var in var_list[1:]:
+                        operator = o(rd.randint(0, 3))
+                        term = operator(term, var)
+                    terms.append(term)
 
             equations.append([sp.diff(variables[m], t), terms])
         systems.append(equations)
