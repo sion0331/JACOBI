@@ -14,8 +14,8 @@ def diff2(expr, var=t):
 def o(j):
     switcher_o = {
         0: lambda a, b: a * b,  # Multiplication
-        1: lambda a, b: a / b  # Division
-        # 2: lambda a, b: a + b,  # Addition
-        # 3: lambda a, b: a - b   # Subtraction
+        1: lambda a, b: a / b,  # Division
+        2: lambda a, b: a + b,  # Addition
+        3: lambda a, b: a - b   # Subtraction
     }
     return switcher_o.get(j, "Invalid")
