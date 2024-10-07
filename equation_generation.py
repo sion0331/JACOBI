@@ -4,34 +4,44 @@ from symbolic_utils import t, create_variable, o
 from functions import f
 
 
-def generate_system(n, m, k, fOps, allow_composite=True):
-    equations = []
-    variables = [create_variable(i) for i in range(1, n + 1)]
+def generate_systems(N, M, I, J, fOps, allow_composite=True):
+    variables = [create_variable(i) for i in range(1, M + 1)]
 
-    for i in range(n):
-        terms = []
-        for _ in range(m):
-            func = f(rd.choice(fOps))
-            var = rd.choice(variables)  # Choose from all available variables
-            term = func(var)
-            if allow_composite:
-                for _ in range(k - 1):
-                    func = f(rd.choice(fOps))
-                    term = func(term)
-            terms.append(term)
+    systems = []
+    for n in range(N):
+        equations = []
+        for m in range(M):
+            terms = []
+            for i in range(I):
+                var_list=[]
+                rd.shuffle(variables) # O(logN)
+                j = 0
+                for var in variables:
+                    if rd.randint(0, 1) == 1:
+                        func = f(rd.choice(fOps))
+                        var = func(var)
+                        j += 1
+                        if allow_composite and j<J: # limit applying composite to only once
+                            if rd.randint(0, 1) == 1:
+                                func = f(rd.choice(fOps))
+                                var = func(var)
+                                j+=1
+                        var_list.append(var)
+                        if j==J: break
 
-        equation = terms[0]
-        for term in terms[1:]:
-            operator = o(rd.randint(0, 1))  # Only use multiplication and division
-            equation = operator(equation, term)
+                if var_list:
+                    term = var_list[0]
+                    for var in var_list[1:]:
+                        operator = o(rd.randint(0, 3))
+                        term = operator(term, var)
+                    terms.append(term)
 
-        equations.append(sp.Eq(sp.diff(variables[i], t), equation))
-
-    return equations
-
+            equations.append([sp.diff(variables[m], t), terms])
+        systems.append(equations)
+    return systems
 
 def beautify_equation(eq, beta_start):
-    lhs, rhs = eq.args
+    lhs = eq[0]
     lhs_str = f"d{str(lhs.args[0])}/dt"
 
     replacements = {
@@ -47,10 +57,8 @@ def beautify_equation(eq, beta_start):
         replacements[f"Derivative(x_{i}(t), (t, 2))"] = f"d²x_{i}/dt²"
 
     # Split the right-hand side into individual terms
-    terms = sp.Mul.make_args(rhs) if rhs.func == sp.Mul else sp.Add.make_args(rhs)
-
     beautified_terms = []
-    for i, term in enumerate(terms):
+    for i, term in enumerate(eq[1]):
         term_str = str(term)
         for old, new in replacements.items():
             term_str = term_str.replace(old, new)
@@ -61,11 +69,14 @@ def beautify_equation(eq, beta_start):
     return f"{lhs_str} = {rhs_str}"
 
 
-def beautify_system(system):
-    beta_count = 0
-    beautified_equations = []
-    for eq in system:
-        beautified_eq = beautify_equation(eq, beta_count)
-        beautified_equations.append(beautified_eq)
-        beta_count += len(sp.Mul.make_args(eq.rhs)) if eq.rhs.func == sp.Mul else len(sp.Add.make_args(eq.rhs))
-    return beautified_equations
+def beautify_system(systems):
+    beautified_systems=[]
+    for system in systems:
+        beta_count = 0
+        beautified_equations = []
+        for eq in system:
+            beautified_eq = beautify_equation(eq, beta_count)
+            beautified_equations.append(beautified_eq)
+            beta_count += len(eq[1])
+        beautified_systems.append(beautified_equations)
+    return beautified_systems
