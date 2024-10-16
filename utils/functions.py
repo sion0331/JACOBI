@@ -48,5 +48,13 @@ def get_allowed_functions():
     allowed_functions = "5"
     return [int(x.strip()) for x in allowed_functions.split(',')]
 
+def get_functions(selected_functions):
+    funcs= [int(x.strip()) for x in selected_functions.split(',')]
+    func_str = []
+    for func in funcs:
+        func_str.append(all_functions[func][0])
+    print(f"Allowed Functions: {','.join(func_str)}")
+    return funcs
+
 def f(i):
     return all_functions.get(i, ("Invalid", lambda x: x))[1]
