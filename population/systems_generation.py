@@ -1,7 +1,24 @@
 import random as rd
 import sympy as sp
-from symbolic_utils import t, create_variable, o
-from functions import f
+from utils.symbolic_utils import t, create_variable, o
+from utils.functions import f
+from utils.numpy_conversion import save_systems_as_numpy_funcs
+
+
+def generate_population(N, M, I, J, fOps, allow_composite):
+    systems = generate_systems(N, M, I, J, fOps, allow_composite)
+    for i, system in enumerate(systems):
+        print(f"generate_system {i}: {system}")
+
+    beautified_systems = beautify_system(systems)
+    for i, system in enumerate(beautified_systems):
+        print(f"beautified_systems {i}: {system}")
+
+    # Save the system as NumPy functions
+    save_systems_as_numpy_funcs(systems, "data/differential_equations.txt")
+    print("\nSystem saved as NumPy functions in 'differential_equations.txt'")
+
+    return systems
 
 
 def generate_systems(N, M, I, J, fOps, allow_composite=True):
@@ -13,21 +30,21 @@ def generate_systems(N, M, I, J, fOps, allow_composite=True):
         for m in range(M):
             terms = []
             for i in range(I):
-                var_list=[]
-                rd.shuffle(variables) # O(logN)
+                var_list = []
+                rd.shuffle(variables)  # O(logN)
                 j = 0
                 for var in variables:
                     if rd.randint(0, 1) == 1:
                         func = f(rd.choice(fOps))
                         var = func(var)
                         j += 1
-                        if allow_composite and j<J: # limit applying composite to only once
+                        if allow_composite and j < J:  # limit applying composite to only once
                             if rd.randint(0, 1) == 1:
                                 func = f(rd.choice(fOps))
                                 var = func(var)
-                                j+=1
+                                j += 1
                         var_list.append(var)
-                        if j==J: break
+                        if j == J: break
 
                 if var_list:
                     term = var_list[0]
@@ -39,6 +56,7 @@ def generate_systems(N, M, I, J, fOps, allow_composite=True):
             equations.append([sp.diff(variables[m], t), terms])
         systems.append(equations)
     return systems
+
 
 def beautify_equation(eq, beta_start):
     lhs = eq[0]
@@ -70,7 +88,7 @@ def beautify_equation(eq, beta_start):
 
 
 def beautify_system(systems):
-    beautified_systems=[]
+    beautified_systems = []
     for system in systems:
         beta_count = 0
         beautified_equations = []

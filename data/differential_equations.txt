@@ -7,40 +7,40 @@ def diff2(x, t):
     return np.gradient(np.gradient(x, t), t)
 
 def eq_0_0(X, betas, t):
-    # dx_1/dt = [x_1(t)*x_2(t), x_1(t) + x_2(t)]
+    # dx_1/dt = [x_1(t), x_2(t)]
     x_1, x_2 = X
-    return betas[0] * (x_1*x_2) + betas[1] * (x_1 + x_2)
+    return betas[0] * (x_1) + betas[1] * (x_2)
 
 def eq_0_1(X, betas, t):
-    # dx_2/dt = [x_2(t), x_1(t)*x_2(t)]
+    # dx_1/dt = [x_1(t) + x_2(t), x_1(t)]
     x_1, x_2 = X
-    return betas[0] * (x_2) + betas[1] * (x_1*x_2)
+    return betas[0] * (x_1 + x_2) + betas[1] * (x_1)
 
 def system_0(X, betas, t):
     return np.array([eq_0_0(X, betas, t), eq_0_1(X, betas, t)])
 
 def eq_1_0(X, betas, t):
-    # dx_1/dt = [x_1(t), x_2(t)]
-    x_1, x_2 = X
-    return betas[0] * (x_1) + betas[1] * (x_2)
-
-def eq_1_1(X, betas, t):
-    # dx_1/dt = [x_1(t)]
+    # dx_2/dt = [x_1(t)]
     x_1, x_2 = X
     return betas[0] * (x_1)
+
+def eq_1_1(X, betas, t):
+    # dx_1/dt = [x_1(t) + x_2(t), x_1(t)]
+    x_1, x_2 = X
+    return betas[0] * (x_1 + x_2) + betas[1] * (x_1)
 
 def system_1(X, betas, t):
     return np.array([eq_1_0(X, betas, t), eq_1_1(X, betas, t)])
 
 def eq_2_0(X, betas, t):
-    # dx_1/dt = [x_1(t)*x_2(t)]
+    # dx_2/dt = [x_1(t) - x_2(t), x_2(t)]
     x_1, x_2 = X
-    return betas[0] * (x_1*x_2)
+    return betas[0] * (x_1 - x_2) + betas[1] * (x_2)
 
 def eq_2_1(X, betas, t):
-    # dx_2/dt = [x_1(t), x_2(t)]
+    # dx_1/dt = [x_2(t), x_1(t)]
     x_1, x_2 = X
-    return betas[0] * (x_1) + betas[1] * (x_2)
+    return betas[0] * (x_2) + betas[1] * (x_1)
 
 def system_2(X, betas, t):
     return np.array([eq_2_0(X, betas, t), eq_2_1(X, betas, t)])

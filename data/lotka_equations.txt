@@ -1,0 +1,12 @@
+def eq_0(X, betas, t):
+    # dx_1/dt = [x_1(t), (x_1) * (x_2)]
+    x_1, x_2 = X
+    return betas[0] * (x_1) + betas[1] * (x_1) * (x_2)
+
+def eq_1(X, betas, t):
+    # dx_2/dt = [x_2(t), x_1(t) * x_2(t)]
+    x_1, x_2 = X
+    return betas[2] * (x_2) + betas[3] * (x_1) * (x_2)
+
+def system(X, betas, t):
+    return np.array([eq_0(X, betas, t), eq_1(X, betas, t)])
