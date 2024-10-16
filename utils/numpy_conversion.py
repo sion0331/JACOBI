@@ -15,7 +15,7 @@ def eq_to_numpy_func(eq, betas):
 
 def save_systems_as_numpy_funcs(systems, filename):
     with open(filename, 'w') as f:
-        # f.write("import numpy as np\n\n")
+        f.write("import numpy as np\n\n")
         #
         # f.write("def diff(x, t):\n")
         # f.write("    return np.gradient(x, t)\n\n")
