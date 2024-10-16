@@ -1,7 +1,9 @@
 from population.genetic_algorithm import generate_new_population
 from evaluators.parameter_estimation import *
 from population.systems_generation import generate_population
+from utils import models
 from utils.functions import get_functions
+import matplotlib.pyplot as plt
 from utils.plots import plot_2D
 
 
@@ -14,13 +16,12 @@ def main():
     I = 2  # Maximum number of terms per equation
     J = 2  # Maximum number of functions per feature
     allow_composite = False  # Set to False if you don't want composite functions
-    f0ps = get_functions("5") # Linear
+    f0ps = get_functions("5")  # Linear
     iterations = 1
-    system_dir = 'data/lotka_equations.txt' # 'data/differential_equations.txt'
-
+    system_dir = 'data/lotka_equations.txt'  # 'data/differential_equations.txt'
 
     ### Generate synthetic data ###
-    #plot_2D(target_func, true_betas)
+    # plot_2D(target_func, true_betas)
     t = np.linspace(0, 10, 100)
     X0 = np.random.rand(num_equations)
     print(f"Initial Condition: {X0}")
@@ -31,7 +32,7 @@ def main():
     ### Generate population ###
     population = generate_population(N, M, I, J, f0ps, allow_composite)
     for i in range(iterations):
-        if i!=0: generate_new_population(population)
+        if i != 0: generate_new_population(population)
 
         # todo - run below for the entire population
         # Load system
