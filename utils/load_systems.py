@@ -34,9 +34,9 @@ def count_betas_and_equations(filename):
 
 
 def create_ode_function(system):
-    """Create an ODE function that can be used with scipy's odeint."""
+    """Create an ODE function that can be used with scipy's solve_ivp."""
 
-    def ode_func(X, t, *betas):
+    def ode_func(t, X, *betas):
         return system(X, betas, t)
 
     return ode_func
