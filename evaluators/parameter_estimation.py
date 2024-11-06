@@ -13,17 +13,19 @@ def calculate_error(simulated, observed, DEBUG):
     if simulated.status == -1:
         # Return a large error if shapes do not match
         if DEBUG: print(f"Shape mismatch: simulated {simulated.y.T.shape}, observed {observed.shape}. Skipping...")
-        return float('inf')
-
-    error = np.mean((simulated.y.T - observed) ** 2)
-    if DEBUG: print("error: ", error)
-    return error
+        # return float('inf')
+        return 1e+5
+    return np.mean((simulated.y.T - observed) ** 2)
 
 
 def objective_function(betas, ode_func, X0, t, observed_data, method, DEBUG):
     """Objective function to minimize: the error between simulated and observed data."""
+    w_reg = 0.01
     simulated = simulate_system(ode_func, X0, t, tuple(betas), method)
-    return calculate_error(simulated, observed_data, DEBUG)
+    reg = w_reg * np.sum(betas ** 2)
+    error = calculate_error(simulated, observed_data, DEBUG)
+    if DEBUG: print(f"betas: {betas} | error: {error} | regularization: {reg}")
+    return error + reg
 
 
 def estimate_parameters(ode_func, X0, t, observed_data, initial_guess, method, DEBUG):
@@ -32,8 +34,9 @@ def estimate_parameters(ode_func, X0, t, observed_data, initial_guess, method, D
         objective_function,
         initial_guess,
         args=(ode_func, X0, t, observed_data, method, DEBUG),
-        # method='L-BFGS-B',
-        options={'maxiter': 100}
+        method='Nelder-Mead',
+        tol=1e-6,
+        options={'maxiter': 100}  # 'disp': True, 'gtol': 1e-6, 'eps': 1e-10}
     )
     if DEBUG: print("estimated parameters: ", result)
     return result.x

@@ -15,7 +15,7 @@ def main():
 
     target_func, num_equations, true_betas = models.lotka()
     ITERATIONS = 1  # Number of generations
-    N = 5  # Maximum number of population
+    N = 20  # Maximum number of population
     M = 2  # Maximum number of equations
     I = 2  # Maximum number of terms per equation
     J = 2  # Maximum number of functions per feature
@@ -24,7 +24,7 @@ def main():
 
     system_load_dir = 'data/differential_equations.txt'  # 'data/lotka_equations.txt'
     system_save_dir = 'data/differential_equations.txt'
-    ivp_method = 'BDF'
+    ivp_method = 'Radau'
     DEBUG = False
 
     #######################################################################
@@ -60,7 +60,8 @@ def main():
         scores = []
         for j, system in enumerate(systems):
             ode_func = create_ode_function(system)
-            estimated_betas = estimate_parameters(ode_func, X0, t, y_target, true_betas, ivp_method, DEBUG)
+            initial_guess = np.random.uniform(low=-3.0, high=3.0, size=(I * M,))
+            estimated_betas = estimate_parameters(ode_func, X0, t, y_target, initial_guess, ivp_method, DEBUG)
             y_pred = simulate_system(ode_func, X0, t, estimated_betas, ivp_method)
             error = calculate_error(y_pred, y_target, DEBUG)
             scores.append(error)
@@ -69,7 +70,6 @@ def main():
                 best_model = ode_func
             print(f"### Generation {i} | System {j} | Error: {error} | Estimated parameters: {estimated_betas}")
 
-        # genetic algorithm
         if i < ITERATIONS - 1:
             population = generate_new_population(scores, population)
             systems = load_systems(system_load_dir)
