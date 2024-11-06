@@ -37,17 +37,20 @@ def save_systems_as_numpy_funcs(systems, filename):
                 f.write(" = X\n")
 
                 terms = []
-                for term in eq[1]:
-                    # todo - extend to more than 5 variables
-                    term_str = str(term)
-                    term_str = term_str.replace('x_1(t)', 'x_1').replace('x_2(t)', 'x_2').replace('x_3(t)',
-                                                                                                  'x_3').replace(
-                        'x_4(t)', 'x_4').replace('x_5(t)', 'x_5')
-                    term_str = term_str.replace('sin', 'np.sin').replace('cos', 'np.cos').replace('tan',
-                                                                                                  'np.tan').replace(
-                        'exp', 'np.exp')
-                    terms.append(f"betas[{j}] * ({term_str})")
-                    j += 1
+                if not eq[1]:
+                    terms.append('0')
+                else:
+                    for term in eq[1]:
+                        # todo - extend to more than 5 variables
+                        term_str = str(term)
+                        term_str = term_str.replace('x_1(t)', 'x_1').replace('x_2(t)', 'x_2').replace('x_3(t)',
+                                                                                                      'x_3').replace(
+                            'x_4(t)', 'x_4').replace('x_5(t)', 'x_5')
+                        term_str = term_str.replace('sin', 'np.sin').replace('cos', 'np.cos').replace('tan',
+                                                                                                      'np.tan').replace(
+                            'exp', 'np.exp')
+                        terms.append(f"betas[{j}] * ({term_str})")
+                        j += 1
 
                 rhs_str = " + ".join(terms)
                 f.write(f"    return {rhs_str}\n\n")

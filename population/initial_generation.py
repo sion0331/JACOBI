@@ -5,18 +5,19 @@ from utils.functions import f
 from utils.numpy_conversion import save_systems_as_numpy_funcs
 
 
-def generate_population(N, M, I, J, fOps, allow_composite):
+def generate_population(N, M, I, J, fOps, allow_composite, save_dir, DEBUG):
+    print("\n#### GENERATE POPULATION ####")
     systems = generate_systems(N, M, I, J, fOps, allow_composite)
     for i, system in enumerate(systems):
-        print(f"generate_system {i}: {system}")
+        if DEBUG: print(f"generate_system {i}: {system}")
 
     beautified_systems = beautify_system(systems)
     for i, system in enumerate(beautified_systems):
         print(f"beautified_systems {i}: {system}")
 
     # Save the system as NumPy functions
-    save_systems_as_numpy_funcs(systems, "data/differential_equations.txt")
-    print("\nSystem saved as NumPy functions in 'differential_equations.txt'")
+    save_systems_as_numpy_funcs(systems, save_dir)
+    print(f"System saved as NumPy functions in {save_dir}\n")
 
     return systems
 
@@ -76,11 +77,14 @@ def beautify_equation(eq, beta_start):
 
     # Split the right-hand side into individual terms
     beautified_terms = []
-    for i, term in enumerate(eq[1]):
-        term_str = str(term)
-        for old, new in replacements.items():
-            term_str = term_str.replace(old, new)
-        beautified_terms.append(f"beta_{beta_start + i}*({term_str})")
+    if not eq[1]:
+        beautified_terms.append('0')
+    else:
+        for i, term in enumerate(eq[1]):
+            term_str = str(term)
+            for old, new in replacements.items():
+                term_str = term_str.replace(old, new)
+            beautified_terms.append(f"beta_{beta_start + i}*({term_str})")
 
     rhs_str = " + ".join(beautified_terms)
 
@@ -98,3 +102,84 @@ def beautify_system(systems):
             beta_count += len(eq[1])
         beautified_systems.append(beautified_equations)
     return beautified_systems
+
+
+def manual_lotka_systems():
+    variables = [create_variable(i) for i in range(1, 3)]
+    linear = f(5)
+    mult = o(0)
+    add = o(2)
+
+    system0 = [
+        [sp.diff(variables[0], t),
+         [
+             linear(variables[0]),
+             mult(linear(variables[0]), linear(variables[1]))
+         ]
+         ],
+        [sp.diff(variables[1], t),
+         [
+             linear(variables[1]),
+             mult(linear(variables[0]), linear(variables[1]))
+         ]
+         ],
+    ]
+
+    system1 = [
+        [sp.diff(variables[0], t),
+         [
+             linear(variables[0]),
+             linear(variables[1])
+         ]
+         ],
+        [sp.diff(variables[1], t),
+         [
+             linear(variables[0]),
+             linear(variables[1])
+         ]
+         ]
+    ]
+
+    system2 = [
+        [sp.diff(variables[0], t),
+         [
+             add(linear(variables[0]), linear(variables[1]))
+         ]
+         ],
+        [sp.diff(variables[1], t),
+         [
+             linear(variables[0]),
+             linear(variables[1])
+         ]
+         ]
+    ]
+
+    system3 = [
+        [sp.diff(variables[0], t),
+         [
+             mult(linear(variables[0]), linear(variables[1]))
+         ]
+         ],
+        [sp.diff(variables[1], t),
+         [
+             mult(linear(variables[0]), linear(variables[1])),
+             linear(variables[1])
+         ]
+         ]
+    ]
+
+    system4 = [
+        [sp.diff(variables[0], t),
+         [
+             linear(variables[0]),
+             add(linear(variables[0]), linear(variables[1]))
+         ]
+         ],
+        [sp.diff(variables[1], t),
+         [
+             linear(variables[0]),
+             add(linear(variables[0]), linear(variables[1]))
+         ]
+         ]
+    ]
+    return [system0, system1, system2, system4]
