@@ -14,8 +14,8 @@ def main():
     #######################################################################
 
     target_func, num_equations, true_betas = models.lotka()
-    ITERATIONS = 1  # Number of generations
-    N = 20  # Maximum number of population
+    ITERATIONS = 2  # Number of generations
+    N = 10  # Maximum number of population
     M = 2  # Maximum number of equations
     I = 2  # Maximum number of terms per equation
     J = 2  # Maximum number of functions per feature
@@ -54,32 +54,30 @@ def main():
     #                         RUN                                     #
     #######################################################################
 
-    best_model = None
-    best_error = float('inf')
+    best = (float('inf'), None, None)
     for i in range(ITERATIONS):
+        print("#### SYSTEM EVALUATION ####")
         scores = []
         for j, system in enumerate(systems):
             ode_func = create_ode_function(system)
-            initial_guess = np.random.uniform(low=-3.0, high=3.0, size=(I * M,))
-            estimated_betas = estimate_parameters(ode_func, X0, t, y_target, initial_guess, ivp_method, DEBUG)
-            y_pred = simulate_system(ode_func, X0, t, estimated_betas, ivp_method)
-            error = calculate_error(y_pred, y_target, DEBUG)
-            scores.append(error)
-            if error < best_error:
-                best_error = error
-                best_model = ode_func
-            print(f"### Generation {i} | System {j} | Error: {error} | Estimated parameters: {estimated_betas}")
+            initial_guess = np.random.uniform(low=-3.0, high=3.0, size=(I * M,))  # TODO - IMPROVE
+            solved = estimate_parameters(ode_func, X0, t, y_target, initial_guess, ivp_method, DEBUG)
+            scores.append(solved.fun)
+            if solved.fun < best[0]:
+                best = (solved.fun, ode_func, solved)
+            print(f"### Generation {i} | System {j} | Error: {solved.fun} | Solved Parameters: {solved.x}")
 
         if i < ITERATIONS - 1:
-            population = generate_new_population(scores, population)
+            population = generate_new_population(scores, population, DEBUG)
             systems = load_systems(system_load_dir)
 
     #######################################################################
     #                         RESULT                                      #
     #######################################################################
 
-    estimated_betas = estimate_parameters(best_model, X0, t, y_target, true_betas, ivp_method, DEBUG)
-    best_pred = simulate_system(best_model, X0, t, estimated_betas, ivp_method).y.T
+    print("\n#### RESULT ####")
+    best_pred = simulate_system(best[1], X0, t, best[2].x, ivp_method).y.T
+    print(f"System:{best[1]} | Betas:{best[2].x} | Error:{best[2].fun}")
     plot_2d_by_y(y_target, "Target", best_pred, "Prediction")
 
 

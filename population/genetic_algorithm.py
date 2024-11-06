@@ -2,9 +2,8 @@ import random
 import copy
 
 
-def generate_new_population(scores, population):
-    print(population)
-    print("# generate_new_population | before #")
+def generate_new_population(scores, population, DEBUG):
+    print("\n#### GENERATE NEW POPULATION | BEFORE ####")
     for s, x in sorted(zip(scores, population)):
         print(f'score: {s} | system: {x}')
 
@@ -16,7 +15,8 @@ def generate_new_population(scores, population):
     sorted_population = [x for _, x in sorted(zip(scores, population))]
     num_parents = max(2, int(len(population) * elitism_rate))
     parents = sorted_population[:num_parents]
-    for x in parents: print(f'parents: {x}')
+    if DEBUG:
+        for x in parents: print(f'parents: {x}')
     new_population.extend(sorted_population[:num_parents])
 
     while len(new_population) < len(population):
@@ -24,43 +24,45 @@ def generate_new_population(scores, population):
 
         # Crossover
         if random.random() < crossover_rate:
-            child1, child2 = crossover(parent1, parent2)
+            child1, child2 = crossover(parent1, parent2, DEBUG)
         else:
             child1, child2 = copy.deepcopy(parent1), copy.deepcopy(parent2)
 
-        # Mutation
-        if random.random() < mutation_rate:
-            child1 = mutate(child1)
-        if random.random() < mutation_rate:
-            child2 = mutate(child2)
+        # TODO - Mutation
+        # if random.random() < mutation_rate:
+        #     child1 = mutate(child1)
+        # if random.random() < mutation_rate:
+        #     child2 = mutate(child2)
 
         # Add children to the new population
         new_population.append(child1)
         if len(new_population) < len(population):
             new_population.append(child2)
 
-    print("# generate_new_population | After #")
+    print("#### GENERATE NEW POPULATION | AFTER ####")
     for x in new_population:
         print(x)
-
+    print()
     return new_population
 
 
-def crossover(parent1, parent2):
+def crossover(parent1, parent2, DEBUG):
     # Swap the i-th equation between the two parents
     child1 = copy.deepcopy(parent1)
     child2 = copy.deepcopy(parent2)
 
-    print(f'# crossover | Before')
-    print(f'child1:{child1}')
-    print(f'child2:{child2}')
+    if DEBUG:
+        print(f'# crossover | Before')
+        print(f'child1:{child1}')
+        print(f'child2:{child2}')
     for i in range(len(parent1)):
         if random.random() < 0.5:
             # Swap the i-th equation between the two parents
             child1[i], child2[i] = child2[i], child1[i]
-    print(f'# crossover | After')
-    print(f'child1:{child1}')
-    print(f'child2:{child2}')
+    if DEBUG:
+        print(f'# crossover | After')
+        print(f'child1:{child1}')
+        print(f'child2:{child2}')
     return child1, child2
 
 
