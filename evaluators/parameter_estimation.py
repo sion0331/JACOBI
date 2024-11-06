@@ -11,10 +11,8 @@ def simulate_system(ode_func, X0, t, betas, method):
 def calculate_error(simulated, observed, DEBUG):
     """Calculate the mean squared error between simulated and observed data."""
     if simulated.status == -1:
-        # Return a large error if shapes do not match
         if DEBUG: print(f"Shape mismatch: simulated {simulated.y.T.shape}, observed {observed.shape}. Skipping...")
-        # return float('inf')
-        return 1e+5
+        return float('inf')
     return np.mean((simulated.y.T - observed) ** 2)
 
 
@@ -39,4 +37,4 @@ def estimate_parameters(ode_func, X0, t, observed_data, initial_guess, method, D
         options={'maxiter': 100}  # 'disp': True, 'gtol': 1e-6, 'eps': 1e-10}
     )
     if DEBUG: print("estimated parameters: ", result)
-    return result.x
+    return result

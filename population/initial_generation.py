@@ -6,7 +6,7 @@ from utils.numpy_conversion import save_systems_as_numpy_funcs
 
 
 def generate_population(N, M, I, J, fOps, allow_composite, save_dir, DEBUG):
-    print("\n#### GENERATE POPULATION ####")
+    print("\n#### GENERATE INITIAL POPULATION ####")
     systems = generate_systems(N, M, I, J, fOps, allow_composite)
     for i, system in enumerate(systems):
         if DEBUG: print(f"generate_system {i}: {system}")
