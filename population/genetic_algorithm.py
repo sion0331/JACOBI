@@ -1,23 +1,32 @@
 import random
 import copy
-
+import re
 
 def generate_new_population(scores, population, DEBUG):
     print("\n#### GENERATE NEW POPULATION | BEFORE ####")
-    for s, x in sorted(zip(scores, population)):
-        print(f'score: {s} | system: {x}')
 
+    # Convert scores to float if they are not already numeric
+    try:
+        sorted_population = [x for _, x in sorted(zip(scores, population), key=lambda pair: float(pair[0]))]
+    except TypeError as e:
+        print("Error in sorting scores:", e)
+        return None
+
+    for s, x in zip(scores, population):
+        print(f'score: {s} | system: {x}')
+    
     elitism_rate = 0.1
     crossover_rate = 0.9
     mutation_rate = 0.1
 
     new_population = []
-    sorted_population = [x for _, x in sorted(zip(scores, population))]
     num_parents = max(2, int(len(population) * elitism_rate))
     parents = sorted_population[:num_parents]
+    
     if DEBUG:
         for x in parents: print(f'parents: {x}')
-    new_population.extend(sorted_population[:num_parents])
+    
+    new_population.extend(parents)
 
     while len(new_population) < len(population):
         parent1, parent2 = random.sample(parents, 2)
@@ -28,22 +37,24 @@ def generate_new_population(scores, population, DEBUG):
         else:
             child1, child2 = copy.deepcopy(parent1), copy.deepcopy(parent2)
 
-        # TODO - Mutation
-        # if random.random() < mutation_rate:
-        #     child1 = mutate(child1)
-        # if random.random() < mutation_rate:
-        #     child2 = mutate(child2)
+        # Mutation
+        if random.random() < mutation_rate:
+            child1 = mutate(child1)
+        if random.random() < mutation_rate:
+            child2 = mutate(child2)
 
         # Add children to the new population
         new_population.append(child1)
         if len(new_population) < len(population):
             new_population.append(child2)
-
+    
     print("#### GENERATE NEW POPULATION | AFTER ####")
     for x in new_population:
         print(x)
     print()
+    
     return new_population
+
 
 
 def crossover(parent1, parent2, DEBUG):
@@ -77,6 +88,7 @@ def mutate(system):
     mutated_equation = mutated_system[eq_idx]
 
     # Randomly decide whether to change a variable, operator, or function
+    
     if random.random() < 0.33:
         # Change a variable
         mutated_equation = mutate_variable(mutated_equation)
@@ -86,20 +98,33 @@ def mutate(system):
     else:
         # Change a function
         mutated_equation = mutate_function(mutated_equation)
-
+    
+    mutated_equation = mutate_function(mutated_equation)
+    
     mutated_system[eq_idx] = mutated_equation
     return mutated_system
 
 
 def mutate_variable(equation):
     """Randomly change a variable in the equation."""
-    # For simplicity, we assume the equation contains variables like x_1, x_2, etc.
-    # Replace a variable with another randomly chosen variable
-    variables = ['x_1', 'x_2', 'x_3', 'x_4', 'x_5']
-    var_to_change = random.choice(variables)
-    new_var = random.choice(variables)
+    pattern = r'x_\d+\(t\)'  
+    variables = set(re.findall(pattern, str(equation)))
+    variables = list(variables)
+    if not variables:
+        return equation
 
-    return equation.replace(var_to_change, new_var)
+    var_to_change = random.choice(variables)
+
+    new_var = random.choice([var for var in variables if var != var_to_change])
+
+    mutated_equation = []
+    for term in equation:
+        if isinstance(term, str) and var_to_change in term:
+            mutated_equation.append(term.replace(var_to_change, new_var))
+        else:
+            mutated_equation.append(term)
+
+    return mutated_equation
 
 
 def mutate_operator(equation):
@@ -107,9 +132,17 @@ def mutate_operator(equation):
     # Replace one of the operators (+, *, -, /) with another operator
     operators = ['+', '-', '*', '/']
     op_to_change = random.choice(operators)
-    new_op = random.choice(operators)
+    
+    new_op = random.choice([op for op in operators if op != op_to_change]) 
 
-    return equation.replace(op_to_change, new_op)
+    mutated_equation = []
+    for term in equation:
+        if isinstance(term, str) and op_to_change in term:
+            mutated_equation.append(term.replace(op_to_change, new_op))
+        else:
+            mutated_equation.append(term)
+    
+    return mutated_equation
 
 
 def mutate_function(equation):
@@ -117,6 +150,14 @@ def mutate_function(equation):
     # Replace a function with another function
     functions = ['sin', 'cos', 'exp', 'log']
     func_to_change = random.choice(functions)
-    new_func = random.choice(functions)
+    
+    new_func = random.choice([func for func in functions if func != func_to_change]) 
+    mutated_equation = []
+    for term in equation:
+        if isinstance(term, str) and func_to_change in term:
+            mutated_equation.append(term.replace(func_to_change, new_func))
+        else:
+            mutated_equation.append(term)
+    
+    return mutated_equation
 
-    return equation.replace(func_to_change, new_func)
