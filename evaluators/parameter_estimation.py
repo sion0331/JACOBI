@@ -12,7 +12,7 @@ def simulate_system(ode_func, X0, t, betas, method, DEBUG):
     def stop_event(*args):
         ts = (time.time() - start_time)
         if ts > timeout:
-            if not DEBUG: print(f'solve_vip exceeded timeout: {ts} > {timeout}')
+            if DEBUG: print(f'solve_vip exceeded timeout: {ts} > {timeout}')
             raise TookTooLong()
         return timeout - ts
 
@@ -77,5 +77,5 @@ class OptimizeStopper(object):
     def __call__(self, xk=None):
         elapsed = time.time() - self.start
         if elapsed > self.max_sec:
-            if not self.DEBUG: print(f"Terminating optimization: exceeded {self.max_sec} seconds")
+            if self.DEBUG: print(f"Terminating optimization: exceeded {self.max_sec} seconds")
             raise TookTooLong()
