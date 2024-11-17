@@ -8,7 +8,7 @@ from utils.numpy_conversion import save_systems_as_numpy_funcs
 
 def generate_population(config):
     print("\n#### GENERATE INITIAL POPULATION ####")
-    systems = generate_systems(config)
+    systems = generate_systems(config.N, config)
     for i, system in enumerate(systems):
         if config.DEBUG: print(f"generate_system {i}: {system}")
 
@@ -23,12 +23,12 @@ def generate_population(config):
     return systems
 
 
-def generate_systems(config):
+def generate_systems(N, config):
     variables = [create_variable(i) for i in range(1, config.M + 1)]
     v = copy.deepcopy(variables)
 
     systems = []
-    for n in range(config.N):
+    for n in range(N):
         equations = []
         for m in range(config.M):
             terms = []
@@ -117,7 +117,7 @@ def manual_lotka_systems():
     variables = [create_variable(i) for i in range(1, 3)]
     linear = f(5)
     mult = o(0)
-    add = o(2)
+    div = o(1)
 
     system0 = [
         [sp.diff(variables[0], t),
@@ -144,7 +144,7 @@ def manual_lotka_systems():
         [sp.diff(variables[1], t),
          [
              linear(variables[0]),
-             linear(variables[1])
+             mult(linear(variables[0]), linear(variables[1]))
          ]
          ]
     ]
@@ -152,7 +152,7 @@ def manual_lotka_systems():
     system2 = [
         [sp.diff(variables[0], t),
          [
-             add(linear(variables[0]), linear(variables[1]))
+             div(linear(variables[0]), linear(variables[1]))
          ]
          ],
         [sp.diff(variables[1], t),
@@ -171,8 +171,7 @@ def manual_lotka_systems():
          ],
         [sp.diff(variables[1], t),
          [
-             mult(linear(variables[0]), linear(variables[1])),
-             linear(variables[1])
+             div(linear(variables[0]), linear(variables[1])),
          ]
          ]
     ]
@@ -181,14 +180,14 @@ def manual_lotka_systems():
         [sp.diff(variables[0], t),
          [
              linear(variables[0]),
-             add(linear(variables[0]), linear(variables[1]))
+             div(linear(variables[0]), linear(variables[1]))
          ]
          ],
         [sp.diff(variables[1], t),
          [
              linear(variables[0]),
-             add(linear(variables[0]), linear(variables[1]))
+             mult(linear(variables[0]), linear(variables[1]))
          ]
          ]
     ]
-    return [system0, system1, system2, system4]
+    return [system0, system1, system2, system3, system4]

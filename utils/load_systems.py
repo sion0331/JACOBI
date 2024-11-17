@@ -3,14 +3,16 @@ import re
 
 def load_systems(filename):
     """Load the system of differential equations from the generated file."""
+    local_namespace = {}
+
     with open(filename, 'r') as f:
         code = f.read()
-    exec(code, globals())
+    exec(code, local_namespace)
 
     systems = []
-    for key in globals():
+    for key in local_namespace:
         if re.match(r'system_\d+', key):  # Look for system_0, system_1, etc.
-            systems.append(globals()[key])
+            systems.append(local_namespace[key])
 
     return systems
 

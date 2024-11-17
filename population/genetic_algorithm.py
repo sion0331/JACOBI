@@ -1,30 +1,41 @@
 import random
 import copy
+import numpy as np
 
-from population.initial_generation import generate_term, beautify_system
+from population.initial_generation import generate_term, beautify_system, generate_systems
 from utils.numpy_conversion import save_systems_as_numpy_funcs
 from utils.symbolic_utils import create_variable
 
 
 def generate_new_population(history, population, config):
     valid_entries = [(solved[0], ind) for solved, ind in zip(history, population) if solved[0].fun < 100]
+    new_population = []
+
     sorted_population = []
+    scores = []
     for solved, ind in sorted(valid_entries, key=lambda x: x[0].fun):
         sorted_population.append(ind)
+        scores.append(solved.fun)
         if config.DEBUG:
             print(f'score: {solved.fun} | system: {ind}')
 
-    new_population = []
+    # selection probabilities
+    weights = [(max(scores) - score) / (max(scores) - min(scores) + 1e-6) for score in scores]  # Avoid division by zero
+    probabilities = np.array(weights) / sum(weights)
+
+    # elites
     num_parents = max(2, int(len(population) * config.elite_rate))
     elites = sorted_population[:num_parents]
-
     if config.DEBUG:
         for x in elites: print(f'elite: {x}')
-
     new_population.extend(elites)
 
+    # new
+    new_systems = generate_systems(int(len(population) * config.new_rate), config)
+    new_population.extend(new_systems)
+
     while len(new_population) < len(population):
-        parent1, parent2 = random.sample(population, 2)
+        parent1, parent2 = random.choices(sorted_population, weights=probabilities, k=2)
 
         # Crossover
         if random.random() < config.crossover_rate:
@@ -65,10 +76,11 @@ def crossover(parent1, parent2, config):
         print(f'# crossover | Before')
         print(f'child1:{child1}')
         print(f'child2:{child2}')
-    for i in range(len(parent1)):
-        if random.random() < 0.5:
-            # Swap the i-th equation between the two parents
-            child1[i][1], child2[i][1] = child2[i][1], child1[i][1]
+
+    i_1 = random.randint(0, config.M - 1)
+    i_2 = random.randint(0, config.M - 1)
+    child1[i_1][1], child2[i_2][1] = child2[i_2][1], child1[i_1][1]
+
     if config.DEBUG:
         print(f'# crossover | After')
         print(f'child1:{child1}')
