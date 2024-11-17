@@ -1,3 +1,4 @@
+import copy
 import random as rd
 import sympy as sp
 from utils.symbolic_utils import t, create_variable, o
@@ -5,58 +6,68 @@ from utils.functions import f
 from utils.numpy_conversion import save_systems_as_numpy_funcs
 
 
-def generate_population(N, M, I, J, fOps, allow_composite, save_dir, DEBUG):
+def generate_population(config):
     print("\n#### GENERATE INITIAL POPULATION ####")
-    systems = generate_systems(N, M, I, J, fOps, allow_composite)
+    systems = generate_systems(config)
     for i, system in enumerate(systems):
-        if DEBUG: print(f"generate_system {i}: {system}")
+        if config.DEBUG: print(f"generate_system {i}: {system}")
 
-    beautified_systems = beautify_system(systems)
+    beautified_systems = [beautify_system(p) for p in systems]
     for i, system in enumerate(beautified_systems):
         print(f"beautified_systems {i}: {system}")
 
     # Save the system as NumPy functions
-    save_systems_as_numpy_funcs(systems, save_dir)
-    print(f"System saved as NumPy functions in {save_dir}\n")
+    save_systems_as_numpy_funcs(systems, config.system_save_dir)
+    print(f"System saved as NumPy functions in {config.system_save_dir}\n")
 
     return systems
 
 
-def generate_systems(N, M, I, J, fOps, allow_composite=True):
-    variables = [create_variable(i) for i in range(1, M + 1)]
+def generate_systems(config):
+    variables = [create_variable(i) for i in range(1, config.M + 1)]
+    v = copy.deepcopy(variables)
 
     systems = []
-    for n in range(N):
+    for n in range(config.N):
         equations = []
-        for m in range(M):
+        for m in range(config.M):
             terms = []
-            for i in range(I):
-                var_list = []
-                rd.shuffle(variables)  # O(logN)
-                j = 0
-                for var in variables:
-                    if rd.randint(0, 1) == 1:
-                        func = f(rd.choice(fOps))
-                        var = func(var)
-                        j += 1
-                        if allow_composite and j < J:  # limit applying composite to only once
-                            if rd.randint(0, 1) == 1:
-                                func = f(rd.choice(fOps))
-                                var = func(var)
-                                j += 1
-                        var_list.append(var)
-                        if j == J: break
-
-                if var_list:
-                    term = var_list[0]
-                    for var in var_list[1:]:
-                        operator = o(rd.randint(0, 3))
-                        term = operator(term, var)
+            for i in range(config.I):
+                term = generate_term(v, config, i == 0)
+                if term is not None:
                     terms.append(term)
 
             equations.append([sp.diff(variables[m], t), terms])
         systems.append(equations)
     return systems
+
+
+def generate_term(variables, config, non_empty):
+    rd.shuffle(variables)  # O(logN)
+    term = None
+    var_list = []
+    j = 0
+    for var in variables:
+        # equation to have at least one term
+        if (non_empty and j == 0) or rd.randint(0, 1) == 1:
+            func = f(rd.choice(config.f0ps))
+            var = func(var)
+            j += 1
+            if config.allow_composite and j < config.J:  # limit applying composite to only once
+                if rd.randint(0, 1) == 1:
+                    func = f(rd.choice(config.fOps))
+                    var = func(var)
+                    j += 1
+            var_list.append(var)
+            if j == config.J: break
+
+    if var_list:
+        term = var_list[0]
+        for var in var_list[1:]:
+            operator = o(rd.randint(0, 1))
+            term = operator(term, var)
+
+    return term
 
 
 def beautify_equation(eq, beta_start):
@@ -91,17 +102,15 @@ def beautify_equation(eq, beta_start):
     return f"{lhs_str} = {rhs_str}"
 
 
-def beautify_system(systems):
-    beautified_systems = []
-    for system in systems:
-        beta_count = 0
-        beautified_equations = []
-        for eq in system:
-            beautified_eq = beautify_equation(eq, beta_count)
-            beautified_equations.append(beautified_eq)
-            beta_count += len(eq[1])
-        beautified_systems.append(beautified_equations)
-    return beautified_systems
+def beautify_system(system):
+    beta_count = 0
+    beautified_equations = []
+    for eq in system:
+        beautified_eq = beautify_equation(eq, beta_count)
+        beautified_equations.append(beautified_eq)
+        beta_count += len(eq[1])
+
+    return beautified_equations
 
 
 def manual_lotka_systems():

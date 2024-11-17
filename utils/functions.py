@@ -1,31 +1,41 @@
 import sympy as sp
 
+
 def one(x):
     return 1
+
 
 def sin(x):
     return sp.sin(x)
 
+
 def cos(x):
     return sp.cos(x)
+
 
 def tan(x):
     return sp.tan(x)
 
+
 def exp(x):
     return sp.exp(x)
+
 
 def linear(x):
     return x
 
+
 def square(x):
     return x ** 2
+
 
 def cube(x):
     return x ** 3
 
+
 def quart(x):
     return x ** 4
+
 
 all_functions = {
     0: ("one", one),
@@ -39,6 +49,7 @@ all_functions = {
     8: ("quart", quart)
 }
 
+
 def get_allowed_functions():
     print("Available functions:")
     for key, (name, _) in all_functions.items():
@@ -48,13 +59,21 @@ def get_allowed_functions():
     allowed_functions = "5"
     return [int(x.strip()) for x in allowed_functions.split(',')]
 
+
 def get_functions(selected_functions):
-    funcs= [int(x.strip()) for x in selected_functions.split(',')]
+    funcs = [int(x.strip()) for x in selected_functions.split(',')]
+    func_str = funcs_to_str(funcs)
+    print(f"Allowed Functions: {func_str}")
+    return funcs
+
+
+def funcs_to_str(funcs):
     func_str = []
     for func in funcs:
         func_str.append(all_functions[func][0])
-    print(f"Allowed Functions: {','.join(func_str)}")
-    return funcs
+    func_str = ','.join(func_str)
+    return func_str
+
 
 def f(i):
     return all_functions.get(i, ("Invalid", lambda x: x))[1]
