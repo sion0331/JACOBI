@@ -14,8 +14,8 @@ class Config:
     def __init__(self):
         self.target = lotka()
 
-        self.G = 5  # Number of generations
-        self.N = 30  # Maximum number of population
+        self.G = 10  # Number of generations
+        self.N = 50  # Maximum number of population
         self.M = 2  # Maximum number of equations
         self.I = 2  # Maximum number of terms per equation
         self.J = 2  # Maximum number of functions per feature

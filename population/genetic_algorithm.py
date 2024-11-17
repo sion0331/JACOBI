@@ -49,8 +49,6 @@ def generate_new_population(history, population, config):
         if random.random() < config.mutation_rate:
             child2 = mutate(child2, config)
 
-        # TODO - generate new population to add
-
         # Add children to the new population
         new_population.append(child1)
         if len(new_population) < len(population):
@@ -68,7 +66,6 @@ def generate_new_population(history, population, config):
 
 
 def crossover(parent1, parent2, config):
-    # Swap the i-th equation between the two parents
     child1 = copy.deepcopy(parent1)
     child2 = copy.deepcopy(parent2)
 
