@@ -20,13 +20,13 @@ class Config:
         self.I = 2  # Maximum number of terms per equation
         self.J = 2  # Maximum number of functions per feature
         self.allow_composite = False  # Composite Functions
-        self.f0ps = get_functions("1,2,4,5,6")
+        self.f0ps = get_functions("5")
         self.ivp_method = 'Radau'
         self.minimize_method = 'Nelder-Mead'
 
-        self.elite_rate = 0.25
-        self.crossover_rate = 0.5
-        self.mutation_rate = 0.8
+        self.elite_rate = 0.2
+        self.crossover_rate = 0.3
+        self.mutation_rate = 0.3
         self.new_rate = 0.2
 
         self.system_load_dir = 'data/differential_equations.txt'  # 'data/lotka_equations.txt'

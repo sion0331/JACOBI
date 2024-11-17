@@ -30,29 +30,22 @@ def generate_new_population(history, population, config):
         for x in elites: print(f'elite: {x}')
     new_population.extend(elites)
 
-    # new
-    new_systems = generate_systems(int(len(population) * config.new_rate), config)
-    new_population.extend(new_systems)
-
-    while len(new_population) < len(population):
+    # crossover
+    for i in range(int(len(population) * config.crossover_rate / 2)):
         parent1, parent2 = random.choices(sorted_population, weights=probabilities, k=2)
-
-        # Crossover
-        if random.random() < config.crossover_rate:
-            child1, child2 = crossover(parent1, parent2, config)
-        else:
-            child1, child2 = copy.deepcopy(parent1), copy.deepcopy(parent2)
-
-        # Mutation
-        if random.random() < config.mutation_rate:
-            child1 = mutate(child1, config)
-        if random.random() < config.mutation_rate:
-            child2 = mutate(child2, config)
-
-        # Add children to the new population
+        child1, child2 = crossover(parent1, parent2, config)
         new_population.append(child1)
-        if len(new_population) < len(population):
-            new_population.append(child2)
+        new_population.append(child2)
+
+    # mutation
+    for i in range(int(len(population) * config.mutation_rate)):
+        parent = random.choices(sorted_population, weights=probabilities, k=1)
+        child = mutate(parent[0], config)
+        new_population.append(child)
+
+    # new
+    new_systems = generate_systems(int(len(population) - len(new_population)), config)
+    new_population.extend(new_systems)
 
     print("\n#### GENERATE NEW POPULATION ####")
     beautified_systems = [beautify_system(p) for p in new_population]
