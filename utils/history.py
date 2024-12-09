@@ -1,4 +1,5 @@
 import pickle
+import os
 import numpy as np
 from scipy.integrate import solve_ivp
 import sympy as sp
@@ -33,17 +34,20 @@ def save_history(config, history):
     print(f"History saved to {filename}.")
 
 
-def load_history(func, f0ps):
-    filename = "../data/results/" + func + "_" + f0ps + ".pkl"
-    try:
-        with open(filename, "rb") as f:
-            history = pickle.load(f)
-        print(f"History loaded from {filename}.")
-        return history
-    except FileNotFoundError:
-        print(f"File {filename} not found.")
-        return None
-
+def load_history():
+    directory = "../data/results"
+    histories = []
+    for filename in os.listdir(directory):
+        if filename.endswith('.pkl'):
+            filepath = os.path.join(directory, filename)
+            try:
+                with open(filepath, 'rb') as file:
+                    history = pickle.load(file)
+                    histories.append((filename, history))
+                    print(f"Loaded {filename} successfully.")
+            except Exception as e:
+                print(f"Failed to load {filename}: {e}")
+    return histories
 
 
 def convert_to_ode_func(system_strings):
@@ -69,56 +73,76 @@ def convert_to_ode_func(system_strings):
     return ode_func
 
 
-# if __name__ == "__main__":
-#     target = lotka()
-#     f0ps = str(get_functions("4,5,6"))
-#
-#     history = load_history(target.__class__.__name__, f0ps)
-#     G = history[0]['G']
-#     N = history[0]['N']
-#     print(f'Loaded: {history[0]}')
-#
-#     min_loss = []
-#     avg_loss = []
-#     invalid = []
-#     last = []
-#     for i, h in enumerate(history[1:]):
-#         loss = []
-#         print(f'generation {h['Generation']} {h['Population']} | Score:{round(h['Score'], 4)} func: {h['System']} param:{h['param']}')
-#         loss.append(h['Score'])
-#         min_loss.append(min(loss))
-#         avg_loss.append(np.mean([l for l in loss if l < 100]))  # Exclude loss > 100
-#         invalid.append(sum(l >= 100 for l in loss))
-#         if h['Generation']==G:
-#             last.append(h)
-#
-#     valid_entries = [(h['Score'], h) for h in history[1:]]
-#     best = None
-#     for score, h in sorted(valid_entries, key=lambda x: x[0]):
-#         print(score, h['Score'])
-#         if best is None or score < best['Score']:
-#             best = h
-#     print(f'\nBest | Loss:{best['Score']} func: {best['System']}')
-#
-#     t = np.linspace(0, 100, 1000)
-#     X0 = np.random.rand(target.N) + 1.0  # 1.0~2.0
-#     y_raw = solve_ivp(target.func, (t[0], t[-1]), X0, args=target.betas, t_eval=t, method='Radau').y.T
-#     y_target = y_raw + np.random.normal(0.0, 0.02, y_raw.shape)
-#
-#     print("initial   ", X0)
-#     # y_best = solve_ivp(convert_to_ode_func(best['System']), (t[0], t[-1]), X0, args=tuple(best['param']), t_eval=t, method='Radau').y.T
-#     fig, axs = plt.subplots(2, 2, figsize=(12, 9))
-#     plot_2d_by_func(axs[0, 0], target.func, target.betas)
-#     # plot_2d_by_y(axs[0, 1], [y_raw, y_target, y_best], ["TARGET_RAW", "TARGET_NOISED", "BEST"])
-#     plot_loss_by_iteration(axs[1, 0], min_loss, avg_loss)
-#     plot_invalid_by_iteration(axs[1, 1], invalid)
-#     #
-#     # note = f""" Target:{type(target).__name__} | G:{history[0][G} N:{config.N} M:{config.M} I:{config.I} J:{config.J} f0ps:{funcs_to_str(config.f0ps)} Composite:{config.allow_composite} | elite:{config.elite_rate} new:{config.new_rate} cross:{config.crossover_rate} mutate:{config.mutation_rate}| ivp:{config.ivp_method} min:{config.minimize_method}
-#     #     Best Function: {beautify_system(best[1])}
-#     #     Best Loss: {best[0]['fun']} Best Parameters: {best[0]['x']}"""
-#     # fig.text(0.03, 0.08, note, va='top', fontsize=10, bbox=dict(facecolor='white', alpha=0.8))
-#     plt.tight_layout(rect=[0, 0.1, 1, 1])
-#     plt.show()
+if __name__ == "__main__":
+    results = []
+    histories = load_history()
+    for history in histories:
+        params = history[1][0]
+        result = {'func': history[0].split('_')[0], 'param': params}
+
+        loss = []
+        min_loss = []
+        avg_loss = []
+        invalid = []
+        last = []
+
+        G = 0
+        for i, h in enumerate(history[1][1:]):
+            if G < h['Generation']:
+                G = h['Generation']
+                min_loss.append(min(loss))
+                avg_loss.append(np.mean([l for l in loss if l < 1000]))  # Exclude loss > 100
+                invalid.append(sum(l >= 1000 for l in loss))
+                loss = []
+
+            # print(f'generation {h['Generation']} {h['Population']} | Score:{round(h['Score'], 4)} func: {h['System']} param:{h['param']}')
+            loss.append(h['Score'])
+
+            if G == params['G'] -1:
+                last.append(h)
+
+        result['min_loss'] = min_loss
+        result['avg_loss'] = avg_loss
+        result['invalid'] = invalid
+        result['last'] = last
+        results.append(result)
+
+    print(results)
+
+
+
+    for result in results:
+        valid_entries = [(h['Score'], h) for h in result['last']]
+        best = None
+        for score, h in sorted(valid_entries, key=lambda x: x[0]):
+            #print(score, h['Score'])
+            if best is None or score < best['Score']:
+                best = h
+        print(f'\nBest | Loss:{best['Score']} func: {best['System']}')
+
+    ### lotka
+    if results[0]['func'] == 'lotka':
+        target = lotka()
+        t = np.linspace(0, 10, 1000)
+        X0 = np.random.rand(target.N) + 1.0  # 1.0~2.0
+        y_raw = solve_ivp(target.func, (t[0], t[-1]), X0, args=target.betas, t_eval=t, method='Radau').y.T
+        y_target = y_raw + np.random.normal(0.0, 0.02, y_raw.shape)
+
+        print("initial   ", X0)
+        # y_best = solve_ivp(convert_to_ode_func(best['System']), (t[0], t[-1]), X0, args=tuple(best['param']), t_eval=t, method='Radau').y.T
+        fig, axs = plt.subplots(2, 2, figsize=(12, 12))
+        plot_2d_by_func(axs[0, 0], target.func, target.betas)
+        plot_2d_by_y(axs[0, 1], X0, [y_raw, y_target], ["Original Data", "Noisy Data", "BEST"])
+        #plot_2d_by_y(axs[0, 1], [y_raw, y_target, y_best], ["TARGET_RAW", "TARGET_NOISED", "BEST"])
+        plot_loss_by_iteration(axs[1, 0], results[0]['min_loss'], results[0]['avg_loss'])
+        plot_invalid_by_iteration(axs[1, 1], results[0]['invalid'])
+    # #
+    # # note = f""" Target:{type(target).__name__} | G:{history[0][G} N:{config.N} M:{config.M} I:{config.I} J:{config.J} f0ps:{funcs_to_str(config.f0ps)} Composite:{config.allow_composite} | elite:{config.elite_rate} new:{config.new_rate} cross:{config.crossover_rate} mutate:{config.mutation_rate}| ivp:{config.ivp_method} min:{config.minimize_method}
+    # #     Best Function: {beautify_system(best[1])}
+    # #     Best Loss: {best[0]['fun']} Best Parameters: {best[0]['x']}"""
+    # # fig.text(0.03, 0.08, note, va='top', fontsize=10, bbox=dict(facecolor='white', alpha=0.8))
+        plt.tight_layout(rect=[0, 0.1, 1, 1])
+        plt.show()
 
 
 

@@ -11,25 +11,29 @@ def plot_2d_by_func(axs, ode_func, betas):
     for x in IC:
         X0 = [x, x]
         Xs = solve_ivp(ode_func, (t[0], t[-1]), X0, args=betas, t_eval=t, method='BDF').y.T
-        axs.plot(Xs[:, 0], Xs[:, 1], "-", label=f"IC:[{str(round(X0[0], 2))},{str(round(X0[1], 2))}")
+        axs.plot(Xs[:, 0], Xs[:, 1], "-", label=f"IC:[{str(round(X0[0], 2))},{str(round(X0[1], 2))}]")
     axs.set_title("Target Phase-space by IC")
-    axs.set_xlabel("X_0")
-    axs.set_ylabel("X_1")
+    axs.set_xlabel("Preys")
+    axs.set_ylabel("Predators")
     axs.legend()
 
 
-def plot_2d_by_y(axs, ys, labels):
+def plot_2d_by_y(axs, x0, ys, labels):
     for y, label in zip(ys, labels):
         axs.plot(y[:, 0], y[:, 1], "-", label=label)
 
+    axs.plot(x0[0], x0[1], 'ro')
+    axs.annotate(f'IC:[{round(x0[0],1)},{round(x0[1],1)}]', xy=(x0[0], x0[1]), xytext=(x0[0] + 0.5, x0[1] + 0.5),
+                 arrowprops=dict(facecolor='black', shrink=1))
+
     x_min, x_max = ys[0][:, 0].min(), ys[0][:, 0].max()
-    y_min, y_max = ys[0][:, 1].min(), ys[0][:, 1].max()
+    y_min, y_max = ys[0][:, 1].min(), 2#ys[0][:, 1].max()
     axs.set_xlim(x_min - x_max * 0.1, x_max * 1.1)
     axs.set_ylim(y_min - y_max * 0.1, y_max * 1.1)
 
     axs.set_title("Best Estimate")
-    axs.set_xlabel("X_0")
-    axs.set_ylabel("X_1")
+    axs.set_xlabel("Preys")
+    axs.set_ylabel("Predators")
     axs.legend()
 
 

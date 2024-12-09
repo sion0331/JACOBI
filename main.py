@@ -20,7 +20,7 @@ class Config:
         self.I = 2  # Maximum number of terms per equation
         self.J = 2  # Maximum number of functions per feature
         self.allow_composite = False  # Composite Functions
-        self.f0ps = get_functions("4,5")
+        self.f0ps = get_functions("1,4,5")
         self.ivp_method = 'Radau'
         self.minimize_method = 'Nelder-Mead'
 
@@ -126,7 +126,7 @@ def main():
     y_best = solve_ivp(best[2], (t[0], t[-1]), X0, args=tuple(best[0].x), t_eval=t, method=config.ivp_method).y.T
     fig, axs = plt.subplots(2, 2, figsize=(12, 9))
     plot_2d_by_func(axs[0, 0], config.target.func, config.target.betas)
-    plot_2d_by_y(axs[0, 1], [y_raw, y_target, y_best], ["TARGET_RAW", "TARGET_NOISED", "BEST"])
+    plot_2d_by_y(axs[0, 1], X0,[y_raw, y_target, y_best], ["TARGET_RAW", "TARGET_NOISED", "BEST"])
     plot_loss_by_iteration(axs[1, 0], min_loss, avg_loss)
     plot_invalid_by_iteration(axs[1, 1], invalid)
 
