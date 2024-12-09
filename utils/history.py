@@ -69,56 +69,56 @@ def convert_to_ode_func(system_strings):
     return ode_func
 
 
-if __name__ == "__main__":
-    target = lotka()
-    f0ps = str(get_functions("4,5,6"))
-
-    history = load_history(target.__class__.__name__, f0ps)
-    G = history[0]['G']
-    N = history[0]['N']
-    print(f'Loaded: {history[0]}')
-
-    min_loss = []
-    avg_loss = []
-    invalid = []
-    last = []
-    for i, h in enumerate(history[1:]):
-        loss = []
-        print(f'generation {h['Generation']} {h['Population']} | Score:{round(h['Score'], 4)} func: {h['System']} param:{h['param']}')
-        loss.append(h['Score'])
-        min_loss.append(min(loss))
-        avg_loss.append(np.mean([l for l in loss if l < 100]))  # Exclude loss > 100
-        invalid.append(sum(l >= 100 for l in loss))
-        if h['Generation']==G:
-            last.append(h)
-
-    valid_entries = [(h['Score'], h) for h in history[1:]]
-    best = None
-    for score, h in sorted(valid_entries, key=lambda x: x[0]):
-        print(score, h['Score'])
-        if best is None or score < best['Score']:
-            best = h
-    print(f'\nBest | Loss:{best['Score']} func: {best['System']}')
-
-    t = np.linspace(0, 100, 1000)
-    X0 = np.random.rand(target.N) + 1.0  # 1.0~2.0
-    y_raw = solve_ivp(target.func, (t[0], t[-1]), X0, args=target.betas, t_eval=t, method='Radau').y.T
-    y_target = y_raw + np.random.normal(0.0, 0.02, y_raw.shape)
-
-    print("initial   ", X0)
-    # y_best = solve_ivp(convert_to_ode_func(best['System']), (t[0], t[-1]), X0, args=tuple(best['param']), t_eval=t, method='Radau').y.T
-    fig, axs = plt.subplots(2, 2, figsize=(12, 9))
-    plot_2d_by_func(axs[0, 0], target.func, target.betas)
-    # plot_2d_by_y(axs[0, 1], [y_raw, y_target, y_best], ["TARGET_RAW", "TARGET_NOISED", "BEST"])
-    plot_loss_by_iteration(axs[1, 0], min_loss, avg_loss)
-    plot_invalid_by_iteration(axs[1, 1], invalid)
-    #
-    # note = f""" Target:{type(target).__name__} | G:{history[0][G} N:{config.N} M:{config.M} I:{config.I} J:{config.J} f0ps:{funcs_to_str(config.f0ps)} Composite:{config.allow_composite} | elite:{config.elite_rate} new:{config.new_rate} cross:{config.crossover_rate} mutate:{config.mutation_rate}| ivp:{config.ivp_method} min:{config.minimize_method}
-    #     Best Function: {beautify_system(best[1])}
-    #     Best Loss: {best[0]['fun']} Best Parameters: {best[0]['x']}"""
-    # fig.text(0.03, 0.08, note, va='top', fontsize=10, bbox=dict(facecolor='white', alpha=0.8))
-    plt.tight_layout(rect=[0, 0.1, 1, 1])
-    plt.show()
+# if __name__ == "__main__":
+#     target = lotka()
+#     f0ps = str(get_functions("4,5,6"))
+#
+#     history = load_history(target.__class__.__name__, f0ps)
+#     G = history[0]['G']
+#     N = history[0]['N']
+#     print(f'Loaded: {history[0]}')
+#
+#     min_loss = []
+#     avg_loss = []
+#     invalid = []
+#     last = []
+#     for i, h in enumerate(history[1:]):
+#         loss = []
+#         print(f'generation {h['Generation']} {h['Population']} | Score:{round(h['Score'], 4)} func: {h['System']} param:{h['param']}')
+#         loss.append(h['Score'])
+#         min_loss.append(min(loss))
+#         avg_loss.append(np.mean([l for l in loss if l < 100]))  # Exclude loss > 100
+#         invalid.append(sum(l >= 100 for l in loss))
+#         if h['Generation']==G:
+#             last.append(h)
+#
+#     valid_entries = [(h['Score'], h) for h in history[1:]]
+#     best = None
+#     for score, h in sorted(valid_entries, key=lambda x: x[0]):
+#         print(score, h['Score'])
+#         if best is None or score < best['Score']:
+#             best = h
+#     print(f'\nBest | Loss:{best['Score']} func: {best['System']}')
+#
+#     t = np.linspace(0, 100, 1000)
+#     X0 = np.random.rand(target.N) + 1.0  # 1.0~2.0
+#     y_raw = solve_ivp(target.func, (t[0], t[-1]), X0, args=target.betas, t_eval=t, method='Radau').y.T
+#     y_target = y_raw + np.random.normal(0.0, 0.02, y_raw.shape)
+#
+#     print("initial   ", X0)
+#     # y_best = solve_ivp(convert_to_ode_func(best['System']), (t[0], t[-1]), X0, args=tuple(best['param']), t_eval=t, method='Radau').y.T
+#     fig, axs = plt.subplots(2, 2, figsize=(12, 9))
+#     plot_2d_by_func(axs[0, 0], target.func, target.betas)
+#     # plot_2d_by_y(axs[0, 1], [y_raw, y_target, y_best], ["TARGET_RAW", "TARGET_NOISED", "BEST"])
+#     plot_loss_by_iteration(axs[1, 0], min_loss, avg_loss)
+#     plot_invalid_by_iteration(axs[1, 1], invalid)
+#     #
+#     # note = f""" Target:{type(target).__name__} | G:{history[0][G} N:{config.N} M:{config.M} I:{config.I} J:{config.J} f0ps:{funcs_to_str(config.f0ps)} Composite:{config.allow_composite} | elite:{config.elite_rate} new:{config.new_rate} cross:{config.crossover_rate} mutate:{config.mutation_rate}| ivp:{config.ivp_method} min:{config.minimize_method}
+#     #     Best Function: {beautify_system(best[1])}
+#     #     Best Loss: {best[0]['fun']} Best Parameters: {best[0]['x']}"""
+#     # fig.text(0.03, 0.08, note, va='top', fontsize=10, bbox=dict(facecolor='white', alpha=0.8))
+#     plt.tight_layout(rect=[0, 0.1, 1, 1])
+#     plt.show()
 
 
 
