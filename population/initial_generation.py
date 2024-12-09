@@ -28,22 +28,27 @@ def generate_systems(N, config):
     v = copy.deepcopy(variables)
 
     systems = []
-
+    symbolic_set = []
     n = 0
     while n<N:
-        equations = []
+        system = []
         for m in range(config.M):
             terms = []
             for i in range(config.I):
                 term = generate_term(v, config, i == 0)
                 if term is not None:
                     terms.append(term)
+            system.append([sp.diff(variables[m], t), terms])
 
-            equations.append([sp.diff(variables[m], t), terms])
-
-        if not is_redundant(equations, systems):
-            systems.append(equations)
+        system_symbolic = [sum(sp.sympify(terms)) for _, terms in system]
+        if not is_redundant(system_symbolic, symbolic_set):
+            systems.append(system)
+            symbolic_set.append(system_symbolic)
             n+=1
+
+        # if not is_redundant(equations, systems):
+        #     systems.append(equations)
+        #     n+=1
     return systems
 
 

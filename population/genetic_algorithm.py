@@ -1,6 +1,7 @@
 import random
 import copy
 import numpy as np
+import sympy as sp
 
 from population.initial_generation import generate_term, beautify_system, generate_systems
 from utils.numpy_conversion import save_systems_as_numpy_funcs
@@ -10,6 +11,7 @@ from utils.symbolic_utils import create_variable, is_redundant
 def generate_new_population(history, population, config):
     valid_entries = [(solved[0], ind) for solved, ind in zip(history, population) if solved[0].fun < 100]
     new_population = []
+    symbolic_set = []
 
     sorted_population = []
     scores = []
@@ -25,10 +27,15 @@ def generate_new_population(history, population, config):
 
     # elites
     num_parents = max(2, int(len(population) * config.elite_rate))
-    elites = sorted_population[:num_parents]
-    if config.DEBUG:
-        for x in elites: print(f'elite: {x}')
-    new_population.extend(elites)
+    # elites = sorted_population[:num_parents]
+    # if config.DEBUG:
+    #     for x in elites: print(f'elite: {x}')
+    # new_population.extend(elites)
+    for system in sorted_population[:num_parents]:
+        new_population.append(system)
+        system_symbolic = [sum(sp.sympify(terms)) for _, terms in system]
+        symbolic_set.append(system_symbolic)
+        if config.DEBUG: print(f'elite: {system}')
 
     # crossover
     n = 0
@@ -36,9 +43,11 @@ def generate_new_population(history, population, config):
     while n < n_crossover:
         parent1, parent2 = random.choices(sorted_population, weights=probabilities, k=2)
         child = crossover(parent1, parent2, config)
-        if not is_redundant(child, new_population):
+        system_symbolic = [sum(sp.sympify(terms)) for _, terms in child]
+        if not is_redundant(system_symbolic, symbolic_set):
             n += 1
             new_population.append(child)
+            symbolic_set.append(system_symbolic)
 
     # mutation
     n = 0
@@ -46,18 +55,22 @@ def generate_new_population(history, population, config):
     while n < n_mutation:
         parent = random.choices(sorted_population, weights=probabilities, k=1)
         child = mutate(parent[0], config)
-        if not is_redundant(child, new_population):
+        system_symbolic = [sum(sp.sympify(terms)) for _, terms in child]
+        if not is_redundant(system_symbolic, symbolic_set):
             n += 1
             new_population.append(child)
+            symbolic_set.append(system_symbolic)
 
     # new
     n = 0
     n_new = int(len(population) - len(new_population))
     while n < n_new:
         child = generate_systems(1, config)[0]
-        if not is_redundant(child, new_population):
+        system_symbolic = [sum(sp.sympify(terms)) for _, terms in child]
+        if not is_redundant(system_symbolic, symbolic_set):
             n += 1
             new_population.append(child)
+            symbolic_set.append(system_symbolic)
 
     print("\n#### GENERATE NEW POPULATION ####")
     beautified_systems = [beautify_system(p) for p in new_population]
@@ -118,119 +131,3 @@ def mutate(system, config):
         print(f'mutated_system: {mutated_system}')
 
     return mutated_system
-
-# def mutate(system, DEBUG):
-#     """Perform mutation on a system by altering one or more terms."""
-#     if not DEBUG:
-#         print(f'#### MUTATION ###')
-#         print(f'{system}')
-#     mutated_system = copy.deepcopy(system)
-#
-#     # Choose a random equation to mutate
-#     eq_idx = random.randint(0, len(mutated_system) - 1)
-#
-#     # Mutate a single term in the chosen equation
-#     mutated_equation = mutated_system[eq_idx]
-#
-#     if not DEBUG:
-#         print(f'{eq_idx} | {system}')
-#         print(f'SELECTED: {mutated_equation}')
-#     # Randomly decide whether to change a variable, operator, or function
-#
-#     if random.random() < 0.33:
-#         # Change a variable
-#         print(f'variable')
-#         mutated_equation = mutate_variable(mutated_equation)
-#     elif random.random() < 0.66:
-#         print(f'operator')
-#         # Change an operator
-#         mutated_equation = mutate_operator(mutated_equation)
-#     else:
-#         print(f'function')
-#         # Change a function
-#         mutated_equation = mutate_function(mutated_equation)
-#
-#     if not DEBUG:
-#         print(f'MUTATED: {mutated_equation}')
-#
-#     mutated_equation = mutate_function(mutated_equation)
-#     if DEBUG:
-#         print(f'MUTATED: {mutated_equation}')
-#
-#     mutated_system[eq_idx] = mutated_equation
-#     if DEBUG:
-#         print(f'MUTATED: {mutated_system}')
-#     return mutated_system
-#
-#
-# def mutate_variable(equation):
-#     """Randomly change a variable in the equation."""
-#     pattern = r'x_\d+\(t\)'
-#     variables = set(re.findall(pattern, str(equation)))
-#     print(f'variables: {variables}')
-#     variables = list(variables)
-#     print(f'variables: {variables}')
-#     if not variables:
-#         return equation
-#
-#     var_to_change = random.choice(variables)
-#     print(f'var_to_change: {var_to_change}')
-#
-#     new_var = random.choice([var for var in variables if var != var_to_change])
-#     print(f'new_var: {new_var}')
-#
-#     mutated_equation = []
-#     for term in equation:
-#         if isinstance(term, str) and var_to_change in term:
-#             print(f'term: {term} | {term.replace(var_to_change, new_var)}')
-#             mutated_equation.append(term.replace(var_to_change, new_var))
-#         else:
-#             print(f'term: {term}')
-#             mutated_equation.append(term)
-#
-#     return mutated_equation
-#
-#
-# def mutate_operator(equation):
-#     """Randomly change an operator in the equation."""
-#     # Replace one of the operators (+, *, -, /) with another operator
-#     operators = ['+', '-', '*', '/']
-#     op_to_change = random.choice(operators)
-#
-#     print(f'op_to_change: {op_to_change}')
-#     new_op = random.choice([op for op in operators if op != op_to_change])
-#     print(f'new_op: {new_op}')
-#
-#     mutated_equation = []
-#     for term in equation:
-#         if isinstance(term, str) and op_to_change in term:
-#             print(f'term op_to_change: {term.replace(op_to_change, new_op)}')
-#             mutated_equation.append(term.replace(op_to_change, new_op))
-#         else:
-#             print(f'term: {term}')
-#             mutated_equation.append(term)
-#
-#     print(f'mutated_equation: {mutated_equation}')
-#     return mutated_equation
-#
-#
-# def mutate_function(equation):
-#     """Randomly change a function (sin, cos, exp) in the equation."""
-#     # Replace a function with another function
-#     functions = ['sin', 'cos', 'exp', 'log']
-#     func_to_change = random.choice(functions)
-#     print(f'func_to_change: {func_to_change}')
-#
-#     new_func = random.choice([func for func in functions if func != func_to_change])
-#     print(f'new_func: {new_func}')
-#
-#     mutated_equation = []
-#     for term in equation:
-#         if isinstance(term, str) and func_to_change in term:
-#             print(f'term: {term} | {term.replace(func_to_change, new_func)}')
-#             mutated_equation.append(term.replace(func_to_change, new_func))
-#         else:
-#             print(f'term: {term}')
-#             mutated_equation.append(term)
-#
-#     return mutated_equation

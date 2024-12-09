@@ -21,44 +21,14 @@ def o(j):
     return switcher_o.get(j, "Invalid")
 
 def is_redundant(system, population):
-    system_symbolic = [sum(sp.sympify(terms)) for _, terms in system]
-    # print("system_symbolic: ", system_symbolic)
-
-    for population_system in population:
-        population_symbolic = [sum(sp.sympify(terms)) for _, terms in population_system]
-
+    for p in population:
         check = True
-        for (rhs1, rhs2) in zip(system_symbolic, population_symbolic):
+        for (rhs1, rhs2) in zip(system, p):
             if sp.simplify(rhs1 - rhs2) != 0:
                 check = False
-                continue
-
+                break
         if check:
-            print("####### REDUNDANT ###### ")
-            print(system, population_system)
+            print("## Redundant ###")
+            print(system, "<>", p)
             return True
-
     return False
-    #
-    # print("is_redundant")
-    # print(system)
-    # # Convert each system in the population to symbolic expressions
-    # # mutated_symbolic = [sp.sympify(equation[1]) for equation in system]
-    # # print(mutated_symbolic)
-    # mutated_symbolic = [sum(sp.sympify(terms)) for _, terms in system]
-    # print("Mutated symbolic:", mutated_symbolic)
-    #
-    #
-    # for s in population:
-    #     system_symbolic = [sum(sp.sympify(terms)) for _, terms in s]
-    #     print("System symbolic:", system_symbolic)
-    #
-    #     # system_symbolic = [sp.sympify(equation[1]) for equation in system]
-    #     # print(system_symbolic)
-    #
-    #     # Compare equations term by term
-    #     if all(sp.simplify(mut_eq - sys_eq) == 0 for mut_eq, sys_eq in zip(mutated_symbolic, system_symbolic)):
-    #         print("true)")
-    #         return True  # Redundant system found
-    #
-    # return False  # No redundancy found

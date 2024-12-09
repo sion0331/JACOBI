@@ -14,20 +14,20 @@ class Config:
     def __init__(self):
         self.target = lotka()
 
-        self.G = 3  # Number of generations
-        self.N = 1000  # Maximum number of population
+        self.G = 50  # Number of generations
+        self.N = 100  # Maximum number of population
         self.M = 2  # Maximum number of equations
         self.I = 2  # Maximum number of terms per equation
         self.J = 2  # Maximum number of functions per feature
         self.allow_composite = False  # Composite Functions
-        self.f0ps = get_functions("1,5,6")
+        self.f0ps = get_functions("4,5,6")
         self.ivp_method = 'Radau'
         self.minimize_method = 'Nelder-Mead'
 
         self.elite_rate = 0.2
         self.crossover_rate = 0.3
-        self.mutation_rate = 0.3
-        self.new_rate = 0.2
+        self.mutation_rate = 0.4
+        self.new_rate = 0.1
 
         self.system_load_dir = 'data/differential_equations.txt'
         self.system_save_dir = 'data/differential_equations.txt'
