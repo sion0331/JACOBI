@@ -28,7 +28,6 @@ def generate_systems(N, config):
     v = copy.deepcopy(variables)
 
     systems = []
-    symbolic_set = []
     n = 0
     while n<N:
         system = []
@@ -40,11 +39,8 @@ def generate_systems(N, config):
                     terms.append(term)
             system.append([sp.diff(variables[m], t), terms])
 
-        # system_symbolic = [sum(sp.sympify(terms)) for _, terms in system]
-        system_symbolic = [sum(terms) for _, terms in system]
         if not is_redundant(system, systems):
             systems.append(system)
-            symbolic_set.append(system_symbolic)
             n+=1
 
     return systems

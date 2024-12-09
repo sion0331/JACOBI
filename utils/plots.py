@@ -41,7 +41,7 @@ def plot_2d_by_y(axs, x0, ys, labels):
 
 
 def plot_2d_estimates_by_y(axs, ys, results, labels):
-    axs.plot(ys[:, 0], ys[:, 1], "-", label="Original", color='black')
+    axs.plot(ys[:, 0], ys[:, 1], "-", label="Lotka-Volterra", color='black')
 
     for result, label in zip(results,labels):
         axs.plot(result[:, 0], result[:, 1], "-", label=label, alpha=0.8)
@@ -54,7 +54,7 @@ def plot_2d_estimates_by_y(axs, ys, results, labels):
     axs.set_title("Best Estimate")
     axs.set_xlabel("Preys")
     axs.set_ylabel("Predators")
-    axs.legend()
+    axs.legend(loc='upper right')
 
 
 def plot_min_loss_by_iteration(axs, results):

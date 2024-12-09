@@ -106,10 +106,10 @@ if __name__ == "__main__":
     ### lotka
     if results[0]['func'] == 'lotka':
         target = lotka()
-        t = np.linspace(0, 100, 500)
+        t = np.linspace(0, 10, 100)
         X0 = np.random.rand(target.N) + 1.0  # 1.0~2.0
         y_raw = solve_ivp(target.func, (t[0], t[-1]), X0, args=target.betas, t_eval=t, method='Radau').y.T
-        y_target = y_raw + np.random.normal(0.0, 0.01, y_raw.shape)
+        y_target = y_raw + np.random.normal(0.0, 0.02, y_raw.shape)
 
         # y_best = solve_ivp(convert_to_ode_func(best['System']), (t[0], t[-1]), X0, args=tuple(best['param']), t_eval=t, method='Radau').y.T
         fig, axs = plt.subplots(2, 2, figsize=(12, 9))

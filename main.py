@@ -15,12 +15,12 @@ class Config:
         self.target = lotka()
 
         self.G = 10  # Number of generations
-        self.N = 300  # Maximum number of population
+        self.N = 200  # Maximum number of population
         self.M = 2  # Maximum number of equations
         self.I = 2  # Maximum number of terms per equation
         self.J = 2  # Maximum number of functions per feature
         self.allow_composite = False  # Composite Functions
-        self.f0ps = get_functions("1,4,5,6")
+        self.f0ps = get_functions("1,2,4,5,6")
         self.ivp_method = 'Radau'
         self.minimize_method = 'Nelder-Mead'
 
