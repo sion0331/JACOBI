@@ -24,11 +24,11 @@ def is_redundant(system, population):
     for p in population:
         check = True
         for (rhs1, rhs2) in zip(system, p):
-            if sp.simplify(rhs1 - rhs2) != 0:
+            if sp.simplify(sum(rhs1[1]) - sum(rhs2[1])) != 0:
                 check = False
                 break
         if check:
-            print("## Redundant ###")
-            print(system, "<>", p)
+            # print("## Redundant ###")
+            # print(system, "<>", p)
             return True
     return False

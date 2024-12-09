@@ -36,19 +36,17 @@ def generate_systems(N, config):
             terms = []
             for i in range(config.I):
                 term = generate_term(v, config, i == 0)
-                if term is not None:
+                if term is not None and not term in terms:
                     terms.append(term)
             system.append([sp.diff(variables[m], t), terms])
 
-        system_symbolic = [sum(sp.sympify(terms)) for _, terms in system]
-        if not is_redundant(system_symbolic, symbolic_set):
+        # system_symbolic = [sum(sp.sympify(terms)) for _, terms in system]
+        system_symbolic = [sum(terms) for _, terms in system]
+        if not is_redundant(system, systems):
             systems.append(system)
             symbolic_set.append(system_symbolic)
             n+=1
 
-        # if not is_redundant(equations, systems):
-        #     systems.append(equations)
-        #     n+=1
     return systems
 
 
