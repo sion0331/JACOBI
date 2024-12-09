@@ -3,6 +3,8 @@ from matplotlib.ticker import MaxNLocator
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 
+from utils.functions import funcs_to_str, get_functions
+
 
 def plot_2d_by_func(axs, ode_func, betas):
     t = np.linspace(0, 10, 100)
@@ -36,6 +38,66 @@ def plot_2d_by_y(axs, x0, ys, labels):
     axs.set_ylabel("Predators")
     axs.legend()
 
+
+
+def plot_2d_estimates_by_y(axs, ys, results, labels):
+    axs.plot(ys[:, 0], ys[:, 1], "-", label="Original", color='black')
+
+    for result, label in zip(results,labels):
+        axs.plot(result[:, 0], result[:, 1], "-", label=label, alpha=0.8)
+
+    x_min, x_max = ys[:, 0].min(), ys[:, 0].max()
+    y_min, y_max = ys[:, 1].min(), ys[:, 1].max()
+    axs.set_xlim(x_min - x_max * 0.1, x_max * 1.1)
+    axs.set_ylim(y_min - y_max * 0.1, y_max * 1.1)
+
+    axs.set_title("Best Estimate")
+    axs.set_xlabel("Preys")
+    axs.set_ylabel("Predators")
+    axs.legend()
+
+
+def plot_min_loss_by_iteration(axs, results):
+    for result in results:
+        axs.plot(np.arange(len(result['min_loss'])), result['min_loss'], marker='o',
+                 label=funcs_to_str(get_functions(result['param']['f0ps'])), linestyle='-', alpha=0.8)
+
+    axs.set_xlabel("Generation")
+    axs.set_ylabel("Minimum Loss")
+    # axs.tick_params(axis='y', labelcolor='blue')
+    axs.set_title("Minimum Loss Over Generations")
+    lines, labels = axs.get_legend_handles_labels()
+    # lines2, labels2 = ax2.get_legend_handles_labels()
+    axs.xaxis.set_major_locator(MaxNLocator(integer=True))
+    axs.legend(lines, labels, loc='upper right')
+
+
+def plot_avg_loss_by_iteration(axs, results):
+    for result in results:
+        axs.plot(np.arange(len(result['avg_loss'])), result['avg_loss'], marker='o',
+                 label=funcs_to_str(get_functions(result['param']['f0ps'])), linestyle='-', alpha=0.8)
+
+    axs.set_xlabel("Generation")
+    axs.set_ylabel("Minimum Loss")
+    # axs.tick_params(axis='y', labelcolor='blue')
+    axs.set_title("Average Loss Over Generations")
+    lines, labels = axs.get_legend_handles_labels()
+    # lines2, labels2 = ax2.get_legend_handles_labels()
+    axs.xaxis.set_major_locator(MaxNLocator(integer=True))
+    axs.legend(lines, labels, loc='upper right')
+
+
+def plot_invalid_counts_by_iteration(axs, results):
+    for result in results:
+        axs.plot(np.arange(len(result['invalid'])), result['invalid'], marker='o',
+                 label=funcs_to_str(get_functions(result['param']['f0ps'])), linestyle='-', alpha=0.8)
+
+    axs.set_xlabel("Generation")
+    axs.set_ylabel("Invalid Count")
+    axs.set_title("Invalid Count Over Generations")
+    lines, labels = axs.get_legend_handles_labels()
+    axs.xaxis.set_major_locator(MaxNLocator(integer=True))
+    axs.legend(lines, labels, loc='upper right')
 
 def plot_loss_by_iteration(axs, min_loss, avg_loss):
     axs.plot(np.arange(len(min_loss)), min_loss, marker='o', label='Minimum Loss', linestyle='-', alpha=0.8)

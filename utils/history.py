@@ -1,15 +1,20 @@
 import pickle
 import os
+import re
 import numpy as np
 from scipy.integrate import solve_ivp
 import sympy as sp
-from population.initial_generation import beautify_system
-from utils.functions import get_functions
-from utils.load_systems import create_ode_function
+
+from evaluators.parameter_estimation import calculate_error
+from population.initial_generation import beautify_system, generate_population
+from utils.functions import get_functions, funcs_to_str
+from utils.load_systems import create_ode_function, load_systems
 from utils.models import lotka
 import matplotlib.pyplot as plt
 
-from utils.plots import plot_2d_by_func, plot_2d_by_y, plot_invalid_by_iteration, plot_loss_by_iteration
+from utils.numpy_conversion import save_systems_as_numpy_funcs, save_str_systems_as_numpy_funcs
+from utils.plots import plot_2d_by_func, plot_2d_by_y, plot_invalid_by_iteration, plot_loss_by_iteration, \
+    plot_min_loss_by_iteration, plot_avg_loss_by_iteration, plot_invalid_counts_by_iteration, plot_2d_estimates_by_y
 
 
 def save_history(config, history):
@@ -50,29 +55,6 @@ def load_history():
     return histories
 
 
-def convert_to_ode_func(system_strings):
-    """Convert a string representation of ODEs to a callable function."""
-    # Define symbolic variables
-    t = sp.Symbol('t')
-    variables = [sp.Function(f'x_{i+1}')(t) for i in range(len(system_strings))]
-    betas = sp.symbols(f'beta_0:{len(system_strings) * 2}')  # Adjust the range based on your beta count
-
-    # Parse the equations into symbolic expressions
-    equations = []
-    for eq in system_strings:
-        eq_rhs = eq.split('=')[1].strip()  # Extract the right-hand side of the equation
-        equations.append(sp.sympify(eq_rhs))
-
-    def ode_func(t, X, *params):
-        # Substitute variables and parameters into the symbolic equations
-        substitutions = {var: val for var, val in zip(variables, X)}
-        substitutions.update({beta: param for beta, param in zip(betas, params)})
-        rhs = [float(eq.subs(substitutions)) for eq in equations]
-        return np.array(rhs)
-
-    return ode_func
-
-
 if __name__ == "__main__":
     results = []
     histories = load_history()
@@ -85,7 +67,6 @@ if __name__ == "__main__":
         avg_loss = []
         invalid = []
         last = []
-
         G = 0
         for i, h in enumerate(history[1][1:]):
             if G < h['Generation']:
@@ -95,9 +76,7 @@ if __name__ == "__main__":
                 invalid.append(sum(l >= 1000 for l in loss))
                 loss = []
 
-            # print(f'generation {h['Generation']} {h['Population']} | Score:{round(h['Score'], 4)} func: {h['System']} param:{h['param']}')
             loss.append(h['Score'])
-
             if G == params['G'] -1:
                 last.append(h)
 
@@ -107,42 +86,62 @@ if __name__ == "__main__":
         result['last'] = last
         results.append(result)
 
-    print(results)
+    for result in results:
+        valid_entries = [(h['Score'], h) for h in result['last']]
+        result['last'] = [h for score, h in sorted(valid_entries, key=lambda x: x[0])]
+        print(result['last'][0])
+        # result['best']=[]
+        # for r in result['last'][:5]:
+        #     result['best'].append(convert_to_ode_func(r['System']))
+        # # print(save_str_systems_as_numpy_funcs(result['last'][:5], 'best_equations.txt'))
+        # print(convert_to_ode_func(result['last'][0]['System']))
 
+        # best = None
+        # for score, h in sorted(valid_entries, key=lambda x: x[0]):
+        #     #print(score, h['Score'])
+        #     if best is None or score < best['Score']:
+        #         best = h
+        # print(f'\nBest | Loss:{best['Score']} func: {best['System']}')
 
+    ### lotka
+    if results[0]['func'] == 'lotka':
+        target = lotka()
+        t = np.linspace(0, 100, 500)
+        X0 = np.random.rand(target.N) + 1.0  # 1.0~2.0
+        y_raw = solve_ivp(target.func, (t[0], t[-1]), X0, args=target.betas, t_eval=t, method='Radau').y.T
+        y_target = y_raw + np.random.normal(0.0, 0.01, y_raw.shape)
 
-    # for result in results:
-    #     valid_entries = [(h['Score'], h) for h in result['last']]
-    #     best = None
-    #     for score, h in sorted(valid_entries, key=lambda x: x[0]):
-    #         #print(score, h['Score'])
-    #         if best is None or score < best['Score']:
-    #             best = h
-    #     print(f'\nBest | Loss:{best['Score']} func: {best['System']}')
-    #
-    # ### lotka
-    # if results[0]['func'] == 'lotka':
-    #     target = lotka()
-    #     t = np.linspace(0, 10, 1000)
-    #     X0 = np.random.rand(target.N) + 1.0  # 1.0~2.0
-    #     y_raw = solve_ivp(target.func, (t[0], t[-1]), X0, args=target.betas, t_eval=t, method='Radau').y.T
-    #     y_target = y_raw + np.random.normal(0.0, 0.02, y_raw.shape)
-    #
-    #     print("initial   ", X0)
-    #     # y_best = solve_ivp(convert_to_ode_func(best['System']), (t[0], t[-1]), X0, args=tuple(best['param']), t_eval=t, method='Radau').y.T
-    #     fig, axs = plt.subplots(2, 2, figsize=(12, 12))
-    #     plot_2d_by_func(axs[0, 0], target.func, target.betas)
-    #     plot_2d_by_y(axs[0, 1], X0, [y_raw, y_target], ["Original Data", "Noisy Data", "BEST"])
-    #     #plot_2d_by_y(axs[0, 1], [y_raw, y_target, y_best], ["TARGET_RAW", "TARGET_NOISED", "BEST"])
-    #     plot_loss_by_iteration(axs[1, 0], results[0]['min_loss'], results[0]['avg_loss'])
-    #     plot_invalid_by_iteration(axs[1, 1], results[0]['invalid'])
-    # # #
-    # # # note = f""" Target:{type(target).__name__} | G:{history[0][G} N:{config.N} M:{config.M} I:{config.I} J:{config.J} f0ps:{funcs_to_str(config.f0ps)} Composite:{config.allow_composite} | elite:{config.elite_rate} new:{config.new_rate} cross:{config.crossover_rate} mutate:{config.mutation_rate}| ivp:{config.ivp_method} min:{config.minimize_method}
-    # # #     Best Function: {beautify_system(best[1])}
-    # # #     Best Loss: {best[0]['fun']} Best Parameters: {best[0]['x']}"""
-    # # # fig.text(0.03, 0.08, note, va='top', fontsize=10, bbox=dict(facecolor='white', alpha=0.8))
-    #     plt.tight_layout(rect=[0, 0.1, 1, 1])
-    #     plt.show()
+        # y_best = solve_ivp(convert_to_ode_func(best['System']), (t[0], t[-1]), X0, args=tuple(best['param']), t_eval=t, method='Radau').y.T
+        fig, axs = plt.subplots(2, 2, figsize=(12, 9))
+        plot_2d_by_func(axs[0, 0], target.func, target.betas)
+        plot_2d_by_y(axs[0, 1], X0, [y_raw, y_target], ["Original Data", "Noisy Data", "BEST"])
+        #plot_2d_by_y(axs[0, 1], [y_raw, y_target, y_best], ["TARGET_RAW", "TARGET_NOISED", "BEST"])
+        plot_min_loss_by_iteration(axs[1, 0], results)
+        plot_avg_loss_by_iteration(axs[1, 1], results)
+        # plot_invalid_by_iteration(axs[1, 1], results[0]['invalid'])
+    # #
+    # # note = f""" Target:{type(target).__name__} | G:{history[0][G} N:{config.N} M:{config.M} I:{config.I} J:{config.J} f0ps:{funcs_to_str(config.f0ps)} Composite:{config.allow_composite} | elite:{config.elite_rate} new:{config.new_rate} cross:{config.crossover_rate} mutate:{config.mutation_rate}| ivp:{config.ivp_method} min:{config.minimize_method}
+    # #     Best Function: {beautify_system(best[1])}
+    # #     Best Loss: {best[0]['fun']} Best Parameters: {best[0]['x']}"""
+    # # fig.text(0.03, 0.08, note, va='top', fontsize=10, bbox=dict(facecolor='white', alpha=0.8))
+        plt.tight_layout(rect=[0, 0.1, 1, 1])
+        plt.show()
+
+        #####
+        best_systems = load_systems('../data/lotka_best.txt')
+        y_best = []
+        labels = [funcs_to_str(get_functions(f)) for f in ["5", "4,5", "1,4,5"]]
+        for system in best_systems:
+            system = create_ode_function(system)
+            y = solve_ivp(system, (t[0], t[-1]), X0, args=tuple([]), t_eval=t, method="Radau").y.T
+            y_best.append(y)
+            print("best error: ", print(np.mean((y - y_raw) ** 2)))
+
+        fig, axs = plt.subplots(2, 2, figsize=(12, 9))
+        plot_invalid_counts_by_iteration(axs[0, 0], results)
+        plot_2d_estimates_by_y(axs[0, 1], y_target, y_best, labels)
+        plt.tight_layout(rect=[0, 0.1, 1, 1])
+        plt.show()
 
 
 

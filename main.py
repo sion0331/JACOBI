@@ -20,7 +20,7 @@ class Config:
         self.I = 2  # Maximum number of terms per equation
         self.J = 2  # Maximum number of functions per feature
         self.allow_composite = False  # Composite Functions
-        self.f0ps = get_functions("1,4,5")
+        self.f0ps = get_functions("1,4,5,6")
         self.ivp_method = 'Radau'
         self.minimize_method = 'Nelder-Mead'
 

@@ -1,0 +1,47 @@
+import numpy as np
+from math import exp, sin
+
+
+# Linear
+def eq_0_0(X, betas, t):
+    # dx_1(t)/dt = beta_0*(x_1) + beta_1*(x_1*x_2)
+    x_1, x_2 = X
+    return 0.66456169 * (x_1) -1.32990482 * (x_1) * (x_2)
+
+def eq_0_1(X, betas, t):
+    # dx_2(t)/dt = beta_2*(x_1*x_2) + beta_3*(x_2)
+    x_1, x_2 = X
+    return 1.00276767 * (x_1) * (x_2) -1.00277606 * (x_2)
+
+def system_0(X, betas, t):
+    return np.array([eq_0_0(X, betas, t), eq_0_1(X, betas, t)])
+
+
+# Linear, exp
+def eq_1_0(X, betas, t):
+    # dx_1(t)/dt = beta_0*(x_1*exp(x_2)) + beta_1*(x_1*exp(-x_2))
+    x_1, x_2 = X
+    return -0.3648128 * ((x_1) * exp(x_2)) + 1.02648826 * ((x_1) * exp(-x_2))
+
+def eq_1_1(X, betas, t):
+    # dx_2(t)/dt = beta_2*(x_2*exp(x_1)) + beta_3*(x_2*exp(-x_1))
+    x_1, x_2 = X
+    return 0.14552001 * ((x_2) * exp(x_1)) - 1.18816778 * ((x_2) * exp(-x_1))
+
+def system_1(X, betas, t):
+    return np.array([eq_1_0(X, betas, t), eq_1_1(X, betas, t)])
+
+
+# Linear, exp, sin
+def eq_2_0(X, betas, t):
+    # dx_1(t)/dt = beta_0*(exp(x_1)) + beta_1*(x_1*sin(x_2))
+    x_1, x_2 = X
+    return 0.22435 * exp(x_1) - 2.0193325 * (x_1) * sin(x_2)
+
+def eq_2_1(X, betas, t):
+    # dx_2(t)/dt = beta_2*(exp(x_1)*sin(x_2)) + beta_3*(x_2)
+    x_1, x_2 = X
+    return 0.25897976 * exp(x_1) * sin(x_2) - 0.87764368 * (x_2)
+
+def system_2(X, betas, t):
+    return np.array([eq_2_0(X, betas, t), eq_2_1(X, betas, t)])
