@@ -14,8 +14,8 @@ class Config:
     def __init__(self):
         self.target = lotka()
 
-        self.G = 20  # Number of generations
-        self.N = 50  # Maximum number of population
+        self.G = 10  # Number of generations
+        self.N = 300  # Maximum number of population
         self.M = 2  # Maximum number of equations
         self.I = 2  # Maximum number of terms per equation
         self.J = 2  # Maximum number of functions per feature
@@ -53,7 +53,7 @@ def main():
 
     y_raw = solve_ivp(config.target.func, (t[0], t[-1]), X0, args=config.target.betas, t_eval=t,
                       method=config.ivp_method).y.T
-    y_target = y_raw + np.random.normal(0.0, 0.01, y_raw.shape) #0.02
+    y_target = y_raw + np.random.normal(0.0, 0.002, y_raw.shape) #0.02
 
     #######################################################################
     #                         INITIAL POPULATION                          #
