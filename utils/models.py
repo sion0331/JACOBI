@@ -24,11 +24,11 @@ def sir_func(t, X, beta, gamma):
 
 
 class SIR():
-    def __init__(self, beta, gamma):
+    def __init__(self):
         self.func = sir_func
         self.N = 3
-        self.beta = beta
-        self.gamma = gamma
+        self.beta = 0.5 #0.5~0.12
+        self.gamma = 0.04
         self.betas = [self.beta, self.gamma]
 
     def get_params(self):

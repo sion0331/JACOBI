@@ -2,6 +2,7 @@ from population.genetic_algorithm import generate_new_population
 from evaluators.parameter_estimation import *
 from population.initial_generation import generate_population, manual_lotka_systems, beautify_system
 from utils.functions import get_functions, funcs_to_str
+from utils.history import save_history
 
 from utils.load_systems import create_ode_function, load_systems
 from utils.models import lotka, SIR
@@ -9,23 +10,22 @@ from utils.plots import plot_2d_by_func, plot_2d_by_y, plot_loss_by_iteration, p
 import matplotlib.pyplot as plt
 import warnings
 
-
 class Config:
     def __init__(self):
         self.target = lotka()
 
-        self.G = 50  # Number of generations
-        self.N = 100  # Maximum number of population
+        self.G = 2  # Number of generations
+        self.N = 5  # Maximum number of population
         self.M = 2  # Maximum number of equations
         self.I = 2  # Maximum number of terms per equation
         self.J = 2  # Maximum number of functions per feature
         self.allow_composite = False  # Composite Functions
-        self.f0ps = get_functions("4,5,6")
+        self.f0ps = get_functions("5")
         self.ivp_method = 'Radau'
         self.minimize_method = 'Nelder-Mead'
 
-        self.elite_rate = 0.2
-        self.crossover_rate = 0.3
+        self.elite_rate = 0.1
+        self.crossover_rate = 0.4
         self.mutation_rate = 0.4
         self.new_rate = 0.1
 
@@ -48,11 +48,12 @@ def main():
 
     t = np.linspace(0, 100, 1000)
     X0 = np.random.rand(config.target.N) + 1.0  # 1.0~2.0
+    # X0 = [997, 3, 0]  # 1.0~2.0
     print(f"true_betas: {config.target.betas} | Initial Condition: {X0}")
 
     y_raw = solve_ivp(config.target.func, (t[0], t[-1]), X0, args=config.target.betas, t_eval=t,
                       method=config.ivp_method).y.T
-    y_target = y_raw + np.random.normal(0.0, 0.02, y_raw.shape)
+    y_target = y_raw + np.random.normal(0.0, 0.01, y_raw.shape) #0.02
 
     #######################################################################
     #                         INITIAL POPULATION                          #
@@ -99,6 +100,8 @@ def main():
     #                         RESULT                                      #
     #######################################################################
 
+    save_history(config, history)
+
     print("\n#### RESULT ####")
     best = None
     min_loss = []
@@ -128,7 +131,7 @@ def main():
     plot_invalid_by_iteration(axs[1, 1], invalid)
 
     note = f""" Target:{type(config.target).__name__} | G:{config.G} N:{config.N} M:{config.M} I:{config.I} J:{config.J} f0ps:{funcs_to_str(config.f0ps)} Composite:{config.allow_composite} | elite:{config.elite_rate} new:{config.new_rate} cross:{config.crossover_rate} mutate:{config.mutation_rate}| ivp:{config.ivp_method} min:{config.minimize_method}
-    Best Function: {beautify_system(best[1])} 
+    Best Function: {beautify_system(best[1])}
     Best Loss: {best[0]['fun']} Best Parameters: {best[0]['x']}"""
     fig.text(0.03, 0.08, note, va='top', fontsize=10, bbox=dict(facecolor='white', alpha=0.8))
     plt.tight_layout(rect=[0, 0.1, 1, 1])

@@ -2,6 +2,7 @@ import random
 import copy
 import numpy as np
 import sympy as sp
+import math
 
 from population.initial_generation import generate_term, beautify_system, generate_systems
 from utils.numpy_conversion import save_systems_as_numpy_funcs
@@ -9,7 +10,7 @@ from utils.symbolic_utils import create_variable, is_redundant
 
 
 def generate_new_population(history, population, config):
-    valid_entries = [(solved[0], ind) for solved, ind in zip(history, population) if solved[0].fun < 100]
+    valid_entries = [(solved[0], ind) for solved, ind in zip(history, population) if not math.isinf(solved[0].fun)]
     new_population = []
     symbolic_set = []
 
@@ -40,6 +41,8 @@ def generate_new_population(history, population, config):
     # crossover
     n = 0
     n_crossover = int(len(population) * config.crossover_rate / 2)
+    print(probabilities)
+    print(sorted_population)
     while n < n_crossover:
         parent1, parent2 = random.choices(sorted_population, weights=probabilities, k=2)
         child = crossover(parent1, parent2, config)
