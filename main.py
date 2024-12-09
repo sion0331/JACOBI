@@ -46,7 +46,7 @@ def main():
     #                         TARGET DATA                                 #
     #######################################################################
 
-    t = np.linspace(0, 10, 100)
+    t = np.linspace(0, 100, 500)
     X0 = np.random.rand(config.target.N) + 1.0  # 1.0~2.0
     # X0 = [997, 3, 0]  # 1.0~2.0
     print(f"true_betas: {config.target.betas} | Initial Condition: {X0}")

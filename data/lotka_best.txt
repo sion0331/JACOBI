@@ -45,3 +45,18 @@ def eq_2_1(X, betas, t):
 
 def system_2(X, betas, t):
     return np.array([eq_2_0(X, betas, t), eq_2_1(X, betas, t)])
+
+
+# Linear, exp, sin, square
+def eq_3_0(X, betas, t):
+    # dx_1(t)/dt = dx_1(t)/dt = beta_0*(exp(x_1)*exp(x_2)) + beta_1*(exp(x_1))
+    x_1, x_2 = X
+    return -0.2150891  * exp(x_1)*exp(x_2) + 0.42905366 * (exp(x_1))
+
+def eq_3_1(X, betas, t):
+    # dx_2(t)/dt = beta_2*(x_1) + beta_3*(exp(-x_1)*exp(x_2))
+    x_1, x_2 = X
+    return 0.16077174 * (x_1) - 0.20305948 * exp(-x_1) * exp(x_2)
+
+def system_3(X, betas, t):
+    return np.array([eq_3_0(X, betas, t), eq_3_1(X, betas, t)])

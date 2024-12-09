@@ -130,7 +130,7 @@ if __name__ == "__main__":
         #####
         best_systems = load_systems('../data/lotka_best.txt')
         y_best = []
-        labels = [funcs_to_str(get_functions(f)) for f in ["5", "4,5", "1,4,5"]]
+        labels = [funcs_to_str(get_functions(f)) for f in ["5", "4,5", "1,4,5", "1,4,5,6"]]
         for system in best_systems:
             system = create_ode_function(system)
             y = solve_ivp(system, (t[0], t[-1]), X0, args=tuple([]), t_eval=t, method="Radau").y.T
