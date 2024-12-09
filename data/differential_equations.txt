@@ -1,651 +1,651 @@
 import numpy as np
 
 def eq_0_0(X, betas, t):
-    # dx_1/dt = [x_2(t), x_1(t)*x_2(t)]
+    # dx_1/dt = [x_1(t)**2, x_1(t)**2*sin(x_2(t))]
     x_1, x_2 = X
-    return betas[0] * (x_2) + betas[1] * (x_1*x_2)
+    return betas[0] * (x_1**2) + betas[1] * (x_1**2*np.sin(x_2))
 
 def eq_0_1(X, betas, t):
-    # dx_2/dt = [x_1(t)*x_2(t)]
+    # dx_2/dt = [sin(x_1(t)), x_2(t)/x_1(t)]
     x_1, x_2 = X
-    return betas[2] * (x_1*x_2)
+    return betas[2] * (np.sin(x_1)) + betas[3] * (x_2/x_1)
 
 def system_0(X, betas, t):
     return np.array([eq_0_0(X, betas, t), eq_0_1(X, betas, t)])
 
 def eq_1_0(X, betas, t):
-    # dx_1/dt = [x_1(t), x_2(t)]
+    # dx_1/dt = [x_1(t)/sin(x_2(t)), sin(x_1(t))]
     x_1, x_2 = X
-    return betas[0] * (x_1) + betas[1] * (x_2)
+    return betas[0] * (x_1/np.sin(x_2)) + betas[1] * (np.sin(x_1))
 
 def eq_1_1(X, betas, t):
-    # dx_2/dt = [x_1(t)]
+    # dx_2/dt = [sin(x_2(t)), x_1(t)]
     x_1, x_2 = X
-    return betas[2] * (x_1)
+    return betas[2] * (np.sin(x_2)) + betas[3] * (x_1)
 
 def system_1(X, betas, t):
     return np.array([eq_1_0(X, betas, t), eq_1_1(X, betas, t)])
 
 def eq_2_0(X, betas, t):
-    # dx_1/dt = [x_1(t), x_1(t)]
+    # dx_1/dt = [x_1(t)/sin(x_2(t)), x_1(t)]
     x_1, x_2 = X
-    return betas[0] * (x_1) + betas[1] * (x_1)
+    return betas[0] * (x_1/np.sin(x_2)) + betas[1] * (x_1)
 
 def eq_2_1(X, betas, t):
-    # dx_2/dt = [x_1(t)*x_2(t)]
+    # dx_2/dt = [x_2(t)**2, sin(x_1(t))*sin(x_2(t))]
     x_1, x_2 = X
-    return betas[2] * (x_1*x_2)
+    return betas[2] * (x_2**2) + betas[3] * (np.sin(x_1)*np.sin(x_2))
 
 def system_2(X, betas, t):
     return np.array([eq_2_0(X, betas, t), eq_2_1(X, betas, t)])
 
 def eq_3_0(X, betas, t):
-    # dx_1/dt = [x_1(t)]
+    # dx_1/dt = [x_1(t)**2/x_2(t)**2, x_1(t)**2*x_2(t)**2]
     x_1, x_2 = X
-    return betas[0] * (x_1)
+    return betas[0] * (x_1**2/x_2**2) + betas[1] * (x_1**2*x_2**2)
 
 def eq_3_1(X, betas, t):
-    # dx_2/dt = [x_1(t)*x_2(t), x_1(t)]
+    # dx_2/dt = [x_1(t)/sin(x_2(t)), x_2(t)]
     x_1, x_2 = X
-    return betas[1] * (x_1*x_2) + betas[2] * (x_1)
+    return betas[2] * (x_1/np.sin(x_2)) + betas[3] * (x_2)
 
 def system_3(X, betas, t):
     return np.array([eq_3_0(X, betas, t), eq_3_1(X, betas, t)])
 
 def eq_4_0(X, betas, t):
-    # dx_1/dt = [x_1(t)*x_2(t), x_2(t)]
+    # dx_1/dt = [x_1(t)/x_2(t), x_2(t)]
     x_1, x_2 = X
-    return betas[0] * (x_1*x_2) + betas[1] * (x_2)
+    return betas[0] * (x_1/x_2) + betas[1] * (x_2)
 
 def eq_4_1(X, betas, t):
-    # dx_2/dt = [x_1(t)*x_2(t), x_1(t)*x_2(t)]
+    # dx_2/dt = [x_1(t)**2, x_2(t)**2]
     x_1, x_2 = X
-    return betas[2] * (x_1*x_2) + betas[3] * (x_1*x_2)
+    return betas[2] * (x_1**2) + betas[3] * (x_2**2)
 
 def system_4(X, betas, t):
     return np.array([eq_4_0(X, betas, t), eq_4_1(X, betas, t)])
 
 def eq_5_0(X, betas, t):
-    # dx_1/dt = [x_1(t), x_2(t)]
+    # dx_1/dt = [x_1(t)/sin(x_2(t)), x_1(t)**2*x_2(t)**2]
     x_1, x_2 = X
-    return betas[0] * (x_1) + betas[1] * (x_2)
+    return betas[0] * (x_1/np.sin(x_2)) + betas[1] * (x_1**2*x_2**2)
 
 def eq_5_1(X, betas, t):
-    # dx_2/dt = [x_1(t)*x_2(t), x_1(t)*x_2(t)]
+    # dx_2/dt = [sin(x_2(t)), x_1(t)]
     x_1, x_2 = X
-    return betas[2] * (x_1*x_2) + betas[3] * (x_1*x_2)
+    return betas[2] * (np.sin(x_2)) + betas[3] * (x_1)
 
 def system_5(X, betas, t):
     return np.array([eq_5_0(X, betas, t), eq_5_1(X, betas, t)])
 
 def eq_6_0(X, betas, t):
-    # dx_1/dt = [x_1(t), x_1(t)]
+    # dx_1/dt = [x_2(t)**2*sin(x_1(t)), sin(x_1(t))]
     x_1, x_2 = X
-    return betas[0] * (x_1) + betas[1] * (x_1)
+    return betas[0] * (x_2**2*np.sin(x_1)) + betas[1] * (np.sin(x_1))
 
 def eq_6_1(X, betas, t):
-    # dx_2/dt = [x_1(t)/x_2(t), x_2(t)]
+    # dx_2/dt = [x_1(t)**2, x_2(t)**2]
     x_1, x_2 = X
-    return betas[2] * (x_1/x_2) + betas[3] * (x_2)
+    return betas[2] * (x_1**2) + betas[3] * (x_2**2)
 
 def system_6(X, betas, t):
     return np.array([eq_6_0(X, betas, t), eq_6_1(X, betas, t)])
 
 def eq_7_0(X, betas, t):
-    # dx_1/dt = [x_2(t)/x_1(t)]
+    # dx_1/dt = [x_1(t)/sin(x_2(t)), x_1(t)**2*x_2(t)**2]
     x_1, x_2 = X
-    return betas[0] * (x_2/x_1)
+    return betas[0] * (x_1/np.sin(x_2)) + betas[1] * (x_1**2*x_2**2)
 
 def eq_7_1(X, betas, t):
-    # dx_2/dt = [x_1(t), x_1(t)]
+    # dx_2/dt = [x_2(t)**2, sin(x_1(t))*sin(x_2(t))]
     x_1, x_2 = X
-    return betas[1] * (x_1) + betas[2] * (x_1)
+    return betas[2] * (x_2**2) + betas[3] * (np.sin(x_1)*np.sin(x_2))
 
 def system_7(X, betas, t):
     return np.array([eq_7_0(X, betas, t), eq_7_1(X, betas, t)])
 
 def eq_8_0(X, betas, t):
-    # dx_1/dt = [x_2(t)/x_1(t)]
+    # dx_1/dt = [x_1(t), x_1(t)**2/x_2(t)]
     x_1, x_2 = X
-    return betas[0] * (x_2/x_1)
+    return betas[0] * (x_1) + betas[1] * (x_1**2/x_2)
 
 def eq_8_1(X, betas, t):
-    # dx_2/dt = [x_1(t)/x_2(t)]
+    # dx_2/dt = [x_2(t)*sin(x_1(t)), x_1(t)**2]
     x_1, x_2 = X
-    return betas[1] * (x_1/x_2)
+    return betas[2] * (x_2*np.sin(x_1)) + betas[3] * (x_1**2)
 
 def system_8(X, betas, t):
     return np.array([eq_8_0(X, betas, t), eq_8_1(X, betas, t)])
 
 def eq_9_0(X, betas, t):
-    # dx_1/dt = [x_1(t)*x_2(t)]
+    # dx_1/dt = [x_1(t)*sin(x_2(t)), x_1(t)**2*x_2(t)**2]
     x_1, x_2 = X
-    return betas[0] * (x_1*x_2)
+    return betas[0] * (x_1*np.sin(x_2)) + betas[1] * (x_1**2*x_2**2)
 
 def eq_9_1(X, betas, t):
-    # dx_2/dt = [x_2(t), x_2(t)]
+    # dx_2/dt = [x_2(t)/x_1(t)**2, x_1(t)/x_2(t)]
     x_1, x_2 = X
-    return betas[1] * (x_2) + betas[2] * (x_2)
+    return betas[2] * (x_2/x_1**2) + betas[3] * (x_1/x_2)
 
 def system_9(X, betas, t):
     return np.array([eq_9_0(X, betas, t), eq_9_1(X, betas, t)])
 
 def eq_10_0(X, betas, t):
-    # dx_1/dt = [x_1(t)]
+    # dx_1/dt = [x_1(t)**2, x_1(t)**2*sin(x_2(t))]
     x_1, x_2 = X
-    return betas[0] * (x_1)
+    return betas[0] * (x_1**2) + betas[1] * (x_1**2*np.sin(x_2))
 
 def eq_10_1(X, betas, t):
-    # dx_2/dt = [x_2(t), x_1(t)*x_2(t)]
+    # dx_2/dt = [x_2(t)**2, sin(x_1(t))*sin(x_2(t))]
     x_1, x_2 = X
-    return betas[1] * (x_2) + betas[2] * (x_1*x_2)
+    return betas[2] * (x_2**2) + betas[3] * (np.sin(x_1)*np.sin(x_2))
 
 def system_10(X, betas, t):
     return np.array([eq_10_0(X, betas, t), eq_10_1(X, betas, t)])
 
 def eq_11_0(X, betas, t):
-    # dx_1/dt = [x_1(t)*x_2(t), x_1(t)/x_2(t)]
+    # dx_1/dt = [x_2(t)**2*sin(x_1(t)), sin(x_1(t))]
     x_1, x_2 = X
-    return betas[0] * (x_1*x_2) + betas[1] * (x_1/x_2)
+    return betas[0] * (x_2**2*np.sin(x_1)) + betas[1] * (np.sin(x_1))
 
 def eq_11_1(X, betas, t):
-    # dx_2/dt = [x_1(t), x_1(t)]
+    # dx_2/dt = [x_1(t)*x_2(t), x_1(t)**2*sin(x_2(t))]
     x_1, x_2 = X
-    return betas[2] * (x_1) + betas[3] * (x_1)
+    return betas[2] * (x_1*x_2) + betas[3] * (x_1**2*np.sin(x_2))
 
 def system_11(X, betas, t):
     return np.array([eq_11_0(X, betas, t), eq_11_1(X, betas, t)])
 
 def eq_12_0(X, betas, t):
-    # dx_1/dt = [x_2(t), x_2(t)]
+    # dx_1/dt = [x_1(t)**2*x_2(t), x_1(t)]
     x_1, x_2 = X
-    return betas[0] * (x_2) + betas[1] * (x_2)
+    return betas[0] * (x_1**2*x_2) + betas[1] * (x_1)
 
 def eq_12_1(X, betas, t):
-    # dx_2/dt = [x_2(t)/x_1(t), x_2(t)]
+    # dx_2/dt = [sin(x_1(t))*sin(x_2(t)), x_1(t)**2/x_2(t)]
     x_1, x_2 = X
-    return betas[2] * (x_2/x_1) + betas[3] * (x_2)
+    return betas[2] * (np.sin(x_1)*np.sin(x_2)) + betas[3] * (x_1**2/x_2)
 
 def system_12(X, betas, t):
     return np.array([eq_12_0(X, betas, t), eq_12_1(X, betas, t)])
 
 def eq_13_0(X, betas, t):
-    # dx_1/dt = [x_1(t), x_1(t)/x_2(t)]
+    # dx_1/dt = [x_1(t)/sin(x_2(t)), x_1(t)**2*x_2(t)**2]
     x_1, x_2 = X
-    return betas[0] * (x_1) + betas[1] * (x_1/x_2)
+    return betas[0] * (x_1/np.sin(x_2)) + betas[1] * (x_1**2*x_2**2)
 
 def eq_13_1(X, betas, t):
-    # dx_2/dt = [x_1(t), x_2(t)]
+    # dx_2/dt = [x_1(t)**2, x_2(t)**2]
     x_1, x_2 = X
-    return betas[2] * (x_1) + betas[3] * (x_2)
+    return betas[2] * (x_1**2) + betas[3] * (x_2**2)
 
 def system_13(X, betas, t):
     return np.array([eq_13_0(X, betas, t), eq_13_1(X, betas, t)])
 
 def eq_14_0(X, betas, t):
-    # dx_1/dt = [x_1(t), x_1(t)*x_2(t)]
+    # dx_1/dt = [sin(x_1(t)), x_2(t)**2/x_1(t)]
     x_1, x_2 = X
-    return betas[0] * (x_1) + betas[1] * (x_1*x_2)
+    return betas[0] * (np.sin(x_1)) + betas[1] * (x_2**2/x_1)
 
 def eq_14_1(X, betas, t):
-    # dx_2/dt = [x_1(t)]
+    # dx_2/dt = [x_1(t)*x_2(t)**2, x_2(t)]
     x_1, x_2 = X
-    return betas[2] * (x_1)
+    return betas[2] * (x_1*x_2**2) + betas[3] * (x_2)
 
 def system_14(X, betas, t):
     return np.array([eq_14_0(X, betas, t), eq_14_1(X, betas, t)])
 
 def eq_15_0(X, betas, t):
-    # dx_1/dt = [x_2(t), x_2(t)/x_1(t)]
+    # dx_1/dt = [x_2(t)**2, x_1(t)**2*x_2(t)]
     x_1, x_2 = X
-    return betas[0] * (x_2) + betas[1] * (x_2/x_1)
+    return betas[0] * (x_2**2) + betas[1] * (x_1**2*x_2)
 
 def eq_15_1(X, betas, t):
-    # dx_2/dt = [x_2(t)]
+    # dx_2/dt = [x_2(t)**2/x_1(t)**2, sin(x_1(t))/sin(x_2(t))]
     x_1, x_2 = X
-    return betas[2] * (x_2)
+    return betas[2] * (x_2**2/x_1**2) + betas[3] * (np.sin(x_1)/np.sin(x_2))
 
 def system_15(X, betas, t):
     return np.array([eq_15_0(X, betas, t), eq_15_1(X, betas, t)])
 
 def eq_16_0(X, betas, t):
-    # dx_1/dt = [x_2(t), x_1(t)*x_2(t)]
+    # dx_1/dt = [sin(x_1(t))]
     x_1, x_2 = X
-    return betas[0] * (x_2) + betas[1] * (x_1*x_2)
+    return betas[0] * (np.sin(x_1))
 
 def eq_16_1(X, betas, t):
-    # dx_2/dt = [x_1(t)*x_2(t), x_1(t)]
+    # dx_2/dt = [sin(x_1(t)), x_2(t)/x_1(t)]
     x_1, x_2 = X
-    return betas[2] * (x_1*x_2) + betas[3] * (x_1)
+    return betas[1] * (np.sin(x_1)) + betas[2] * (x_2/x_1)
 
 def system_16(X, betas, t):
     return np.array([eq_16_0(X, betas, t), eq_16_1(X, betas, t)])
 
 def eq_17_0(X, betas, t):
-    # dx_1/dt = [x_1(t)*x_2(t), x_1(t)]
+    # dx_1/dt = [x_1(t)**2*x_2(t), x_1(t)/x_2(t)**2]
     x_1, x_2 = X
-    return betas[0] * (x_1*x_2) + betas[1] * (x_1)
+    return betas[0] * (x_1**2*x_2) + betas[1] * (x_1/x_2**2)
 
 def eq_17_1(X, betas, t):
-    # dx_2/dt = [x_2(t), x_1(t)/x_2(t)]
+    # dx_2/dt = [sin(x_1(t))*sin(x_2(t)), sin(x_1(t))]
     x_1, x_2 = X
-    return betas[2] * (x_2) + betas[3] * (x_1/x_2)
+    return betas[2] * (np.sin(x_1)*np.sin(x_2)) + betas[3] * (np.sin(x_1))
 
 def system_17(X, betas, t):
     return np.array([eq_17_0(X, betas, t), eq_17_1(X, betas, t)])
 
 def eq_18_0(X, betas, t):
-    # dx_1/dt = [x_1(t)/x_2(t), x_1(t)]
+    # dx_1/dt = [x_1(t)**2*x_2(t)**2]
     x_1, x_2 = X
-    return betas[0] * (x_1/x_2) + betas[1] * (x_1)
+    return betas[0] * (x_1**2*x_2**2)
 
 def eq_18_1(X, betas, t):
-    # dx_2/dt = [x_1(t), x_1(t)*x_2(t)]
+    # dx_2/dt = [sin(x_1(t))*sin(x_2(t)), x_1(t)]
     x_1, x_2 = X
-    return betas[2] * (x_1) + betas[3] * (x_1*x_2)
+    return betas[1] * (np.sin(x_1)*np.sin(x_2)) + betas[2] * (x_1)
 
 def system_18(X, betas, t):
     return np.array([eq_18_0(X, betas, t), eq_18_1(X, betas, t)])
 
 def eq_19_0(X, betas, t):
-    # dx_1/dt = [x_2(t)/x_1(t), x_2(t)]
+    # dx_1/dt = [x_1(t), x_1(t)/sin(x_2(t))]
     x_1, x_2 = X
-    return betas[0] * (x_2/x_1) + betas[1] * (x_2)
+    return betas[0] * (x_1) + betas[1] * (x_1/np.sin(x_2))
 
 def eq_19_1(X, betas, t):
-    # dx_2/dt = [x_2(t)/x_1(t), x_1(t)]
+    # dx_2/dt = [x_2(t)*sin(x_1(t)), x_1(t)**2]
     x_1, x_2 = X
-    return betas[2] * (x_2/x_1) + betas[3] * (x_1)
+    return betas[2] * (x_2*np.sin(x_1)) + betas[3] * (x_1**2)
 
 def system_19(X, betas, t):
     return np.array([eq_19_0(X, betas, t), eq_19_1(X, betas, t)])
 
 def eq_20_0(X, betas, t):
-    # dx_1/dt = [x_1(t)]
+    # dx_1/dt = [x_1(t)/x_2(t)**2, x_1(t)**2]
     x_1, x_2 = X
-    return betas[0] * (x_1)
+    return betas[0] * (x_1/x_2**2) + betas[1] * (x_1**2)
 
 def eq_20_1(X, betas, t):
-    # dx_2/dt = [x_2(t)]
+    # dx_2/dt = [sin(x_1(t)), x_1(t)]
     x_1, x_2 = X
-    return betas[1] * (x_2)
+    return betas[2] * (np.sin(x_1)) + betas[3] * (x_1)
 
 def system_20(X, betas, t):
     return np.array([eq_20_0(X, betas, t), eq_20_1(X, betas, t)])
 
 def eq_21_0(X, betas, t):
-    # dx_1/dt = [x_1(t), x_1(t)*x_2(t)]
+    # dx_1/dt = [x_1(t)/x_2(t), x_2(t)]
     x_1, x_2 = X
-    return betas[0] * (x_1) + betas[1] * (x_1*x_2)
+    return betas[0] * (x_1/x_2) + betas[1] * (x_2)
 
 def eq_21_1(X, betas, t):
-    # dx_2/dt = [x_1(t)*x_2(t), x_1(t)]
+    # dx_2/dt = [x_1(t)**2, x_1(t)]
     x_1, x_2 = X
-    return betas[2] * (x_1*x_2) + betas[3] * (x_1)
+    return betas[2] * (x_1**2) + betas[3] * (x_1)
 
 def system_21(X, betas, t):
     return np.array([eq_21_0(X, betas, t), eq_21_1(X, betas, t)])
 
 def eq_22_0(X, betas, t):
-    # dx_1/dt = [x_1(t)/x_2(t), x_1(t)]
+    # dx_1/dt = [x_2(t)]
     x_1, x_2 = X
-    return betas[0] * (x_1/x_2) + betas[1] * (x_1)
+    return betas[0] * (x_2)
 
 def eq_22_1(X, betas, t):
-    # dx_2/dt = [x_1(t)/x_2(t), x_1(t)/x_2(t)]
+    # dx_2/dt = [x_2(t)*sin(x_1(t)), x_1(t)*sin(x_2(t))]
     x_1, x_2 = X
-    return betas[2] * (x_1/x_2) + betas[3] * (x_1/x_2)
+    return betas[1] * (x_2*np.sin(x_1)) + betas[2] * (x_1*np.sin(x_2))
 
 def system_22(X, betas, t):
     return np.array([eq_22_0(X, betas, t), eq_22_1(X, betas, t)])
 
 def eq_23_0(X, betas, t):
-    # dx_1/dt = [x_1(t)/x_2(t), x_1(t)*x_2(t)]
+    # dx_1/dt = [x_2(t), sin(x_2(t))]
     x_1, x_2 = X
-    return betas[0] * (x_1/x_2) + betas[1] * (x_1*x_2)
+    return betas[0] * (x_2) + betas[1] * (np.sin(x_2))
 
 def eq_23_1(X, betas, t):
-    # dx_2/dt = [x_1(t), x_1(t)]
+    # dx_2/dt = [x_2(t)**2*sin(x_1(t)), x_1(t)**2]
     x_1, x_2 = X
-    return betas[2] * (x_1) + betas[3] * (x_1)
+    return betas[2] * (x_2**2*np.sin(x_1)) + betas[3] * (x_1**2)
 
 def system_23(X, betas, t):
     return np.array([eq_23_0(X, betas, t), eq_23_1(X, betas, t)])
 
 def eq_24_0(X, betas, t):
-    # dx_1/dt = [x_2(t)]
+    # dx_1/dt = [x_1(t)/sin(x_2(t)), sin(x_1(t))]
     x_1, x_2 = X
-    return betas[0] * (x_2)
+    return betas[0] * (x_1/np.sin(x_2)) + betas[1] * (np.sin(x_1))
 
 def eq_24_1(X, betas, t):
-    # dx_2/dt = [x_1(t)/x_2(t), x_1(t)]
+    # dx_2/dt = [sin(x_1(t))/sin(x_2(t)), x_1(t)]
     x_1, x_2 = X
-    return betas[1] * (x_1/x_2) + betas[2] * (x_1)
+    return betas[2] * (np.sin(x_1)/np.sin(x_2)) + betas[3] * (x_1)
 
 def system_24(X, betas, t):
     return np.array([eq_24_0(X, betas, t), eq_24_1(X, betas, t)])
 
 def eq_25_0(X, betas, t):
-    # dx_1/dt = [x_2(t), x_2(t)/x_1(t)]
+    # dx_1/dt = [x_2(t)**2, x_1(t)**2*x_2(t)]
     x_1, x_2 = X
-    return betas[0] * (x_2) + betas[1] * (x_2/x_1)
+    return betas[0] * (x_2**2) + betas[1] * (x_1**2*x_2)
 
 def eq_25_1(X, betas, t):
-    # dx_2/dt = [x_1(t)]
+    # dx_2/dt = [x_1(t), x_1(t)**2*sin(x_2(t))]
     x_1, x_2 = X
-    return betas[2] * (x_1)
+    return betas[2] * (x_1) + betas[3] * (x_1**2*np.sin(x_2))
 
 def system_25(X, betas, t):
     return np.array([eq_25_0(X, betas, t), eq_25_1(X, betas, t)])
 
 def eq_26_0(X, betas, t):
-    # dx_1/dt = [x_2(t), x_1(t)]
+    # dx_1/dt = [x_2(t)]
     x_1, x_2 = X
-    return betas[0] * (x_2) + betas[1] * (x_1)
+    return betas[0] * (x_2)
 
 def eq_26_1(X, betas, t):
-    # dx_2/dt = [x_1(t)*x_2(t), x_1(t)]
+    # dx_2/dt = [x_1(t)/sin(x_2(t)), sin(x_1(t))]
     x_1, x_2 = X
-    return betas[2] * (x_1*x_2) + betas[3] * (x_1)
+    return betas[1] * (x_1/np.sin(x_2)) + betas[2] * (np.sin(x_1))
 
 def system_26(X, betas, t):
     return np.array([eq_26_0(X, betas, t), eq_26_1(X, betas, t)])
 
 def eq_27_0(X, betas, t):
-    # dx_1/dt = [x_1(t), x_1(t)]
+    # dx_1/dt = [x_2(t), x_1(t)**2*x_2(t)**2]
     x_1, x_2 = X
-    return betas[0] * (x_1) + betas[1] * (x_1)
+    return betas[0] * (x_2) + betas[1] * (x_1**2*x_2**2)
 
 def eq_27_1(X, betas, t):
-    # dx_2/dt = [x_2(t), x_1(t)*x_2(t)]
+    # dx_2/dt = [x_2(t)**2, sin(x_1(t))*sin(x_2(t))]
     x_1, x_2 = X
-    return betas[2] * (x_2) + betas[3] * (x_1*x_2)
+    return betas[2] * (x_2**2) + betas[3] * (np.sin(x_1)*np.sin(x_2))
 
 def system_27(X, betas, t):
     return np.array([eq_27_0(X, betas, t), eq_27_1(X, betas, t)])
 
 def eq_28_0(X, betas, t):
-    # dx_1/dt = [x_1(t)/x_2(t), x_2(t)]
+    # dx_1/dt = [x_2(t)**2*sin(x_1(t)), sin(x_1(t))]
     x_1, x_2 = X
-    return betas[0] * (x_1/x_2) + betas[1] * (x_2)
+    return betas[0] * (x_2**2*np.sin(x_1)) + betas[1] * (np.sin(x_1))
 
 def eq_28_1(X, betas, t):
-    # dx_2/dt = [x_2(t), x_2(t)]
+    # dx_2/dt = [sin(x_2(t)), x_1(t)]
     x_1, x_2 = X
-    return betas[2] * (x_2) + betas[3] * (x_2)
+    return betas[2] * (np.sin(x_2)) + betas[3] * (x_1)
 
 def system_28(X, betas, t):
     return np.array([eq_28_0(X, betas, t), eq_28_1(X, betas, t)])
 
 def eq_29_0(X, betas, t):
-    # dx_1/dt = [x_2(t)]
+    # dx_1/dt = [x_2(t)**2*sin(x_1(t)), x_2(t)**2/sin(x_1(t))]
     x_1, x_2 = X
-    return betas[0] * (x_2)
+    return betas[0] * (x_2**2*np.sin(x_1)) + betas[1] * (x_2**2/np.sin(x_1))
 
 def eq_29_1(X, betas, t):
-    # dx_2/dt = [x_2(t)]
+    # dx_2/dt = [x_2(t)*sin(x_1(t)), sin(x_2(t))]
     x_1, x_2 = X
-    return betas[1] * (x_2)
+    return betas[2] * (x_2*np.sin(x_1)) + betas[3] * (np.sin(x_2))
 
 def system_29(X, betas, t):
     return np.array([eq_29_0(X, betas, t), eq_29_1(X, betas, t)])
 
 def eq_30_0(X, betas, t):
-    # dx_1/dt = [x_1(t)*x_2(t), x_2(t)]
+    # dx_1/dt = [x_1(t)/x_2(t)**2, x_2(t)**2]
     x_1, x_2 = X
-    return betas[0] * (x_1*x_2) + betas[1] * (x_2)
+    return betas[0] * (x_1/x_2**2) + betas[1] * (x_2**2)
 
 def eq_30_1(X, betas, t):
-    # dx_2/dt = [x_1(t)*x_2(t), x_2(t)]
+    # dx_2/dt = [x_1(t)**2, x_2(t)]
     x_1, x_2 = X
-    return betas[2] * (x_1*x_2) + betas[3] * (x_2)
+    return betas[2] * (x_1**2) + betas[3] * (x_2)
 
 def system_30(X, betas, t):
     return np.array([eq_30_0(X, betas, t), eq_30_1(X, betas, t)])
 
 def eq_31_0(X, betas, t):
-    # dx_1/dt = [x_1(t)]
+    # dx_1/dt = [x_2(t)**2, x_1(t)**2*x_2(t)]
     x_1, x_2 = X
-    return betas[0] * (x_1)
+    return betas[0] * (x_2**2) + betas[1] * (x_1**2*x_2)
 
 def eq_31_1(X, betas, t):
-    # dx_2/dt = [x_2(t)/x_1(t), x_1(t)*x_2(t)]
+    # dx_2/dt = [x_1(t)*x_2(t), sin(x_2(t))/x_1(t)]
     x_1, x_2 = X
-    return betas[1] * (x_2/x_1) + betas[2] * (x_1*x_2)
+    return betas[2] * (x_1*x_2) + betas[3] * (np.sin(x_2)/x_1)
 
 def system_31(X, betas, t):
     return np.array([eq_31_0(X, betas, t), eq_31_1(X, betas, t)])
 
 def eq_32_0(X, betas, t):
-    # dx_1/dt = [x_2(t), x_2(t)/x_1(t)]
+    # dx_1/dt = [x_1(t)*x_2(t)]
     x_1, x_2 = X
-    return betas[0] * (x_2) + betas[1] * (x_2/x_1)
+    return betas[0] * (x_1*x_2)
 
 def eq_32_1(X, betas, t):
-    # dx_2/dt = [x_1(t)/x_2(t), x_1(t)*x_2(t)]
+    # dx_2/dt = [x_1(t)/sin(x_2(t)), x_1(t)/x_2(t)**2]
     x_1, x_2 = X
-    return betas[2] * (x_1/x_2) + betas[3] * (x_1*x_2)
+    return betas[1] * (x_1/np.sin(x_2)) + betas[2] * (x_1/x_2**2)
 
 def system_32(X, betas, t):
     return np.array([eq_32_0(X, betas, t), eq_32_1(X, betas, t)])
 
 def eq_33_0(X, betas, t):
-    # dx_1/dt = [x_1(t)*x_2(t), x_1(t)]
+    # dx_1/dt = [sin(x_1(t)), x_2(t)**2*sin(x_1(t))]
     x_1, x_2 = X
-    return betas[0] * (x_1*x_2) + betas[1] * (x_1)
+    return betas[0] * (np.sin(x_1)) + betas[1] * (x_2**2*np.sin(x_1))
 
 def eq_33_1(X, betas, t):
-    # dx_2/dt = [x_2(t)/x_1(t), x_1(t)]
+    # dx_2/dt = [x_2(t)/x_1(t)**2, x_2(t)/sin(x_1(t))]
     x_1, x_2 = X
-    return betas[2] * (x_2/x_1) + betas[3] * (x_1)
+    return betas[2] * (x_2/x_1**2) + betas[3] * (x_2/np.sin(x_1))
 
 def system_33(X, betas, t):
     return np.array([eq_33_0(X, betas, t), eq_33_1(X, betas, t)])
 
 def eq_34_0(X, betas, t):
-    # dx_1/dt = [x_1(t)*x_2(t), x_1(t)*x_2(t)]
+    # dx_1/dt = [x_1(t)**2*x_2(t), x_1(t)]
     x_1, x_2 = X
-    return betas[0] * (x_1*x_2) + betas[1] * (x_1*x_2)
+    return betas[0] * (x_1**2*x_2) + betas[1] * (x_1)
 
 def eq_34_1(X, betas, t):
-    # dx_2/dt = [x_2(t), x_2(t)/x_1(t)]
+    # dx_2/dt = [sin(x_2(t))/x_1(t)**2, sin(x_1(t))]
     x_1, x_2 = X
-    return betas[2] * (x_2) + betas[3] * (x_2/x_1)
+    return betas[2] * (np.sin(x_2)/x_1**2) + betas[3] * (np.sin(x_1))
 
 def system_34(X, betas, t):
     return np.array([eq_34_0(X, betas, t), eq_34_1(X, betas, t)])
 
 def eq_35_0(X, betas, t):
-    # dx_1/dt = [x_1(t), x_1(t)/x_2(t)]
+    # dx_1/dt = [x_2(t)/x_1(t)**2, sin(x_1(t))]
     x_1, x_2 = X
-    return betas[0] * (x_1) + betas[1] * (x_1/x_2)
+    return betas[0] * (x_2/x_1**2) + betas[1] * (np.sin(x_1))
 
 def eq_35_1(X, betas, t):
-    # dx_2/dt = [x_2(t)/x_1(t), x_1(t)*x_2(t)]
+    # dx_2/dt = [x_1(t)*x_2(t)**2, x_2(t)]
     x_1, x_2 = X
-    return betas[2] * (x_2/x_1) + betas[3] * (x_1*x_2)
+    return betas[2] * (x_1*x_2**2) + betas[3] * (x_2)
 
 def system_35(X, betas, t):
     return np.array([eq_35_0(X, betas, t), eq_35_1(X, betas, t)])
 
 def eq_36_0(X, betas, t):
-    # dx_1/dt = [x_1(t), x_1(t)*x_2(t)]
+    # dx_1/dt = [x_1(t)/x_2(t)**2, sin(x_1(t))/sin(x_2(t))]
     x_1, x_2 = X
-    return betas[0] * (x_1) + betas[1] * (x_1*x_2)
+    return betas[0] * (x_1/x_2**2) + betas[1] * (np.sin(x_1)/np.sin(x_2))
 
 def eq_36_1(X, betas, t):
-    # dx_2/dt = [x_2(t), x_1(t)]
+    # dx_2/dt = [x_1(t)**2/sin(x_2(t)), sin(x_2(t))]
     x_1, x_2 = X
-    return betas[2] * (x_2) + betas[3] * (x_1)
+    return betas[2] * (x_1**2/np.sin(x_2)) + betas[3] * (np.sin(x_2))
 
 def system_36(X, betas, t):
     return np.array([eq_36_0(X, betas, t), eq_36_1(X, betas, t)])
 
 def eq_37_0(X, betas, t):
-    # dx_1/dt = [x_2(t), x_1(t)]
+    # dx_1/dt = [x_2(t)*sin(x_1(t))]
     x_1, x_2 = X
-    return betas[0] * (x_2) + betas[1] * (x_1)
+    return betas[0] * (x_2*np.sin(x_1))
 
 def eq_37_1(X, betas, t):
-    # dx_2/dt = [x_1(t)*x_2(t)]
+    # dx_2/dt = [x_2(t), x_2(t)**2*sin(x_1(t))]
     x_1, x_2 = X
-    return betas[2] * (x_1*x_2)
+    return betas[1] * (x_2) + betas[2] * (x_2**2*np.sin(x_1))
 
 def system_37(X, betas, t):
     return np.array([eq_37_0(X, betas, t), eq_37_1(X, betas, t)])
 
 def eq_38_0(X, betas, t):
-    # dx_1/dt = [x_1(t)/x_2(t), x_1(t)]
+    # dx_1/dt = [sin(x_2(t)), x_2(t)]
     x_1, x_2 = X
-    return betas[0] * (x_1/x_2) + betas[1] * (x_1)
+    return betas[0] * (np.sin(x_2)) + betas[1] * (x_2)
 
 def eq_38_1(X, betas, t):
-    # dx_2/dt = [x_1(t)*x_2(t), x_1(t)]
+    # dx_2/dt = [x_2(t)**2, x_2(t)]
     x_1, x_2 = X
-    return betas[2] * (x_1*x_2) + betas[3] * (x_1)
+    return betas[2] * (x_2**2) + betas[3] * (x_2)
 
 def system_38(X, betas, t):
     return np.array([eq_38_0(X, betas, t), eq_38_1(X, betas, t)])
 
 def eq_39_0(X, betas, t):
-    # dx_1/dt = [x_1(t), x_1(t)]
+    # dx_1/dt = [x_1(t)/x_2(t)**2, sin(x_2(t))/x_1(t)]
     x_1, x_2 = X
-    return betas[0] * (x_1) + betas[1] * (x_1)
+    return betas[0] * (x_1/x_2**2) + betas[1] * (np.sin(x_2)/x_1)
 
 def eq_39_1(X, betas, t):
-    # dx_2/dt = [x_1(t), x_2(t)]
+    # dx_2/dt = [sin(x_1(t)), sin(x_2(t))]
     x_1, x_2 = X
-    return betas[2] * (x_1) + betas[3] * (x_2)
+    return betas[2] * (np.sin(x_1)) + betas[3] * (np.sin(x_2))
 
 def system_39(X, betas, t):
     return np.array([eq_39_0(X, betas, t), eq_39_1(X, betas, t)])
 
 def eq_40_0(X, betas, t):
-    # dx_1/dt = [x_1(t)*x_2(t), x_1(t)]
+    # dx_1/dt = [x_1(t)**2/sin(x_2(t))]
     x_1, x_2 = X
-    return betas[0] * (x_1*x_2) + betas[1] * (x_1)
+    return betas[0] * (x_1**2/np.sin(x_2))
 
 def eq_40_1(X, betas, t):
-    # dx_2/dt = [x_2(t), x_2(t)]
+    # dx_2/dt = [x_1(t)**2/sin(x_2(t)), x_1(t)**2*x_2(t)**2]
     x_1, x_2 = X
-    return betas[2] * (x_2) + betas[3] * (x_2)
+    return betas[1] * (x_1**2/np.sin(x_2)) + betas[2] * (x_1**2*x_2**2)
 
 def system_40(X, betas, t):
     return np.array([eq_40_0(X, betas, t), eq_40_1(X, betas, t)])
 
 def eq_41_0(X, betas, t):
-    # dx_1/dt = [x_1(t)*x_2(t), x_2(t)]
+    # dx_1/dt = [x_2(t)**2, x_2(t)**2]
     x_1, x_2 = X
-    return betas[0] * (x_1*x_2) + betas[1] * (x_2)
+    return betas[0] * (x_2**2) + betas[1] * (x_2**2)
 
 def eq_41_1(X, betas, t):
-    # dx_2/dt = [x_1(t), x_1(t)]
+    # dx_2/dt = [x_2(t)**2*sin(x_1(t)), x_1(t)**2*sin(x_2(t))]
     x_1, x_2 = X
-    return betas[2] * (x_1) + betas[3] * (x_1)
+    return betas[2] * (x_2**2*np.sin(x_1)) + betas[3] * (x_1**2*np.sin(x_2))
 
 def system_41(X, betas, t):
     return np.array([eq_41_0(X, betas, t), eq_41_1(X, betas, t)])
 
 def eq_42_0(X, betas, t):
-    # dx_1/dt = [x_1(t)/x_2(t), x_1(t)]
+    # dx_1/dt = [x_1(t)**2*sin(x_2(t)), x_2(t)**2]
     x_1, x_2 = X
-    return betas[0] * (x_1/x_2) + betas[1] * (x_1)
+    return betas[0] * (x_1**2*np.sin(x_2)) + betas[1] * (x_2**2)
 
 def eq_42_1(X, betas, t):
-    # dx_2/dt = [x_2(t)]
+    # dx_2/dt = [x_2(t)**2]
     x_1, x_2 = X
-    return betas[2] * (x_2)
+    return betas[2] * (x_2**2)
 
 def system_42(X, betas, t):
     return np.array([eq_42_0(X, betas, t), eq_42_1(X, betas, t)])
 
 def eq_43_0(X, betas, t):
-    # dx_1/dt = [x_1(t)*x_2(t)]
+    # dx_1/dt = [sin(x_1(t)), sin(x_1(t))*sin(x_2(t))]
     x_1, x_2 = X
-    return betas[0] * (x_1*x_2)
+    return betas[0] * (np.sin(x_1)) + betas[1] * (np.sin(x_1)*np.sin(x_2))
 
 def eq_43_1(X, betas, t):
-    # dx_2/dt = [x_1(t)*x_2(t), x_2(t)]
+    # dx_2/dt = [x_1(t)**2, x_2(t)**2]
     x_1, x_2 = X
-    return betas[1] * (x_1*x_2) + betas[2] * (x_2)
+    return betas[2] * (x_1**2) + betas[3] * (x_2**2)
 
 def system_43(X, betas, t):
     return np.array([eq_43_0(X, betas, t), eq_43_1(X, betas, t)])
 
 def eq_44_0(X, betas, t):
-    # dx_1/dt = [x_2(t), x_2(t)]
+    # dx_1/dt = [sin(x_2(t))]
     x_1, x_2 = X
-    return betas[0] * (x_2) + betas[1] * (x_2)
+    return betas[0] * (np.sin(x_2))
 
 def eq_44_1(X, betas, t):
-    # dx_2/dt = [x_1(t), x_1(t)]
+    # dx_2/dt = [x_2(t)**2, sin(x_1(t))]
     x_1, x_2 = X
-    return betas[2] * (x_1) + betas[3] * (x_1)
+    return betas[1] * (x_2**2) + betas[2] * (np.sin(x_1))
 
 def system_44(X, betas, t):
     return np.array([eq_44_0(X, betas, t), eq_44_1(X, betas, t)])
 
 def eq_45_0(X, betas, t):
-    # dx_1/dt = [x_1(t), x_2(t)]
+    # dx_1/dt = [x_1(t)**2*sin(x_2(t)), x_1(t)**2/x_2(t)**2]
     x_1, x_2 = X
-    return betas[0] * (x_1) + betas[1] * (x_2)
+    return betas[0] * (x_1**2*np.sin(x_2)) + betas[1] * (x_1**2/x_2**2)
 
 def eq_45_1(X, betas, t):
-    # dx_2/dt = [x_2(t)/x_1(t)]
+    # dx_2/dt = [x_2(t)**2/x_1(t)]
     x_1, x_2 = X
-    return betas[2] * (x_2/x_1)
+    return betas[2] * (x_2**2/x_1)
 
 def system_45(X, betas, t):
     return np.array([eq_45_0(X, betas, t), eq_45_1(X, betas, t)])
 
 def eq_46_0(X, betas, t):
-    # dx_1/dt = [x_1(t)*x_2(t)]
+    # dx_1/dt = [x_1(t)**2, x_2(t)]
     x_1, x_2 = X
-    return betas[0] * (x_1*x_2)
+    return betas[0] * (x_1**2) + betas[1] * (x_2)
 
 def eq_46_1(X, betas, t):
-    # dx_2/dt = [x_1(t)*x_2(t)]
+    # dx_2/dt = [sin(x_1(t))/x_2(t)]
     x_1, x_2 = X
-    return betas[1] * (x_1*x_2)
+    return betas[2] * (np.sin(x_1)/x_2)
 
 def system_46(X, betas, t):
     return np.array([eq_46_0(X, betas, t), eq_46_1(X, betas, t)])
 
 def eq_47_0(X, betas, t):
-    # dx_1/dt = [x_1(t)*x_2(t), x_2(t)]
+    # dx_1/dt = [x_1(t)*sin(x_2(t))]
     x_1, x_2 = X
-    return betas[0] * (x_1*x_2) + betas[1] * (x_2)
+    return betas[0] * (x_1*np.sin(x_2))
 
 def eq_47_1(X, betas, t):
-    # dx_2/dt = [x_1(t), x_2(t)]
+    # dx_2/dt = [x_1(t)**2/x_2(t)**2, x_1(t)/x_2(t)]
     x_1, x_2 = X
-    return betas[2] * (x_1) + betas[3] * (x_2)
+    return betas[1] * (x_1**2/x_2**2) + betas[2] * (x_1/x_2)
 
 def system_47(X, betas, t):
     return np.array([eq_47_0(X, betas, t), eq_47_1(X, betas, t)])
 
 def eq_48_0(X, betas, t):
-    # dx_1/dt = [x_2(t), x_2(t)]
+    # dx_1/dt = [sin(x_1(t))]
     x_1, x_2 = X
-    return betas[0] * (x_2) + betas[1] * (x_2)
+    return betas[0] * (np.sin(x_1))
 
 def eq_48_1(X, betas, t):
-    # dx_2/dt = [x_1(t)*x_2(t), x_2(t)]
+    # dx_2/dt = [x_2(t)**2/sin(x_1(t)), x_1(t)**2]
     x_1, x_2 = X
-    return betas[2] * (x_1*x_2) + betas[3] * (x_2)
+    return betas[1] * (x_2**2/np.sin(x_1)) + betas[2] * (x_1**2)
 
 def system_48(X, betas, t):
     return np.array([eq_48_0(X, betas, t), eq_48_1(X, betas, t)])
 
 def eq_49_0(X, betas, t):
-    # dx_1/dt = [x_1(t)*x_2(t), x_2(t)]
+    # dx_1/dt = [sin(x_2(t)), sin(x_1(t))]
     x_1, x_2 = X
-    return betas[0] * (x_1*x_2) + betas[1] * (x_2)
+    return betas[0] * (np.sin(x_2)) + betas[1] * (np.sin(x_1))
 
 def eq_49_1(X, betas, t):
-    # dx_2/dt = [x_1(t)*x_2(t), x_1(t)]
+    # dx_2/dt = [x_1(t), sin(x_1(t))]
     x_1, x_2 = X
-    return betas[2] * (x_1*x_2) + betas[3] * (x_1)
+    return betas[2] * (x_1) + betas[3] * (np.sin(x_1))
 
 def system_49(X, betas, t):
     return np.array([eq_49_0(X, betas, t), eq_49_1(X, betas, t)])

@@ -1,7 +1,7 @@
 import copy
 import random as rd
 import sympy as sp
-from utils.symbolic_utils import t, create_variable, o
+from utils.symbolic_utils import t, create_variable, o, is_redundant
 from utils.functions import f
 from utils.numpy_conversion import save_systems_as_numpy_funcs
 
@@ -28,7 +28,9 @@ def generate_systems(N, config):
     v = copy.deepcopy(variables)
 
     systems = []
-    for n in range(N):
+
+    n = 0
+    while n<N:
         equations = []
         for m in range(config.M):
             terms = []
@@ -38,7 +40,10 @@ def generate_systems(N, config):
                     terms.append(term)
 
             equations.append([sp.diff(variables[m], t), terms])
-        systems.append(equations)
+
+        if not is_redundant(equations, systems):
+            systems.append(equations)
+            n+=1
     return systems
 
 

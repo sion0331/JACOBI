@@ -59,3 +59,40 @@ def plot_invalid_by_iteration(axs, invalid):
     axs.set_ylabel("Number of Invalid Entries")
     axs.xaxis.set_major_locator(MaxNLocator(integer=True))
     axs.legend()
+
+
+def plot_time_series(t, y_raw, y_target, y_best):
+    fig, axs = plt.subplots(3, 2, figsize=(15, 15))
+    # plot for the first variable
+    axs[2, 0].plot(t, y_raw[:, 0], label='Raw Data (Variable 1)')
+    axs[2, 0].plot(t, y_target[:, 0], label='Target Data (Variable 1)')
+    axs[2, 0].plot(t, y_best[:, 0], label='Best Fit (Variable 1)')
+    axs[2, 0].set_xlabel('Time')
+    axs[2, 0].set_ylabel('Value')
+    axs[2, 0].legend()
+    axs[2, 0].set_title('Time Series Plot (Variable 1)')
+    # plot for the second variable
+    axs[2, 1].plot(t, y_raw[:, 1], label='Raw Data (Variable 2)')
+    axs[2, 1].plot(t, y_target[:, 1], label='Target Data (Variable 2)')
+    axs[2, 1].plot(t, y_best[:, 1], label='Best Fit (Variable 2)')
+    axs[2, 1].set_xlabel('Time')
+    axs[2, 1].set_ylabel('Value')
+    axs[2, 1].legend()
+    axs[2, 1].set_title('Time Series Plot (Variable 2)')
+
+
+def new_plot(t, y_raw, y_target, y_best):
+    fig, axs = plt.subplots(2, 2, figsize=(15, 12))
+    # plot for all data combined (Raw + Target + Best Fit for both variables)
+    axs[1, 1].plot(t, y_raw[:, 0], label='Raw Data (Variable 1)', color='blue', linestyle='-')
+    axs[1, 1].plot(t, y_target[:, 0], label='Target Data (Variable 1)', color='green', linestyle='--')
+    axs[1, 1].plot(t, y_best[:, 0], label='Best Fit (Variable 1)', color='red', linestyle='-.')
+    axs[1, 1].plot(t, y_raw[:, 1], label='Raw Data (Variable 2)', color='orange', linestyle='-')
+    axs[1, 1].plot(t, y_target[:, 1], label='Target Data (Variable 2)', color='purple', linestyle='--')
+    axs[1, 1].plot(t, y_best[:, 1], label='Best Fit (Variable 2)', color='brown', linestyle='-.')
+    axs[1, 1].set_xlabel('Time')
+    axs[1, 1].set_ylabel('Value')
+    axs[1, 1].legend()
+    axs[1, 1].set_title('Combined Data (Raw + Target + Best Fit for Var 1 & Var 2)')
+    plt.tight_layout()
+    plt.show()

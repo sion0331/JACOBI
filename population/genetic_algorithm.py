@@ -4,7 +4,7 @@ import numpy as np
 
 from population.initial_generation import generate_term, beautify_system, generate_systems
 from utils.numpy_conversion import save_systems_as_numpy_funcs
-from utils.symbolic_utils import create_variable
+from utils.symbolic_utils import create_variable, is_redundant
 
 
 def generate_new_population(history, population, config):
@@ -20,7 +20,7 @@ def generate_new_population(history, population, config):
             print(f'score: {solved.fun} | system: {ind}')
 
     # selection probabilities
-    weights = [(max(scores) - score) / (max(scores) - min(scores) + 1e-6) for score in scores]  # Avoid division by zero
+    weights = [(max(scores) - score) / (max(scores) - min(scores) + 1e-6) for score in scores]
     probabilities = np.array(weights) / sum(weights)
 
     # elites
@@ -31,21 +31,33 @@ def generate_new_population(history, population, config):
     new_population.extend(elites)
 
     # crossover
-    for i in range(int(len(population) * config.crossover_rate / 2)):
+    n = 0
+    n_crossover = int(len(population) * config.crossover_rate / 2)
+    while n < n_crossover:
         parent1, parent2 = random.choices(sorted_population, weights=probabilities, k=2)
-        child1, child2 = crossover(parent1, parent2, config)
-        new_population.append(child1)
-        new_population.append(child2)
+        child = crossover(parent1, parent2, config)
+        if not is_redundant(child, new_population):
+            n += 1
+            new_population.append(child)
 
     # mutation
-    for i in range(int(len(population) * config.mutation_rate)):
+    n = 0
+    n_mutation = int(len(population) * config.mutation_rate)
+    while n < n_mutation:
         parent = random.choices(sorted_population, weights=probabilities, k=1)
         child = mutate(parent[0], config)
-        new_population.append(child)
+        if not is_redundant(child, new_population):
+            n += 1
+            new_population.append(child)
 
     # new
-    new_systems = generate_systems(int(len(population) - len(new_population)), config)
-    new_population.extend(new_systems)
+    n = 0
+    n_new = int(len(population) - len(new_population))
+    while n < n_new:
+        child = generate_systems(1, config)[0]
+        if not is_redundant(child, new_population):
+            n += 1
+            new_population.append(child)
 
     print("\n#### GENERATE NEW POPULATION ####")
     beautified_systems = [beautify_system(p) for p in new_population]
@@ -59,23 +71,19 @@ def generate_new_population(history, population, config):
 
 
 def crossover(parent1, parent2, config):
-    child1 = copy.deepcopy(parent1)
-    child2 = copy.deepcopy(parent2)
+    child = []
+    for eq1, eq2 in zip(parent1, parent2):
+        # Randomly select equation from parent1 or parent2
+        selected_eq = copy.deepcopy(eq1 if random.random() < 0.5 else eq2)
+        child.append(selected_eq)
 
     if config.DEBUG:
-        print(f'# crossover | Before')
-        print(f'child1:{child1}')
-        print(f'child2:{child2}')
+        print(f'# Crossover Result:')
+        print(f'Parent1: {parent1}')
+        print(f'Parent2: {parent2}')
+        print(f'Child: {child}')
 
-    i_1 = random.randint(0, config.M - 1)
-    i_2 = random.randint(0, config.M - 1)
-    child1[i_1][1], child2[i_2][1] = child2[i_2][1], child1[i_1][1]
-
-    if config.DEBUG:
-        print(f'# crossover | After')
-        print(f'child1:{child1}')
-        print(f'child2:{child2}')
-    return child1, child2
+    return child
 
 
 def mutate(system, config):

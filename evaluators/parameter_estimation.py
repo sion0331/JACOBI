@@ -29,6 +29,9 @@ def calculate_error(simulated, observed, DEBUG):
     if simulated.status == -1:
         if DEBUG: print(f"Shape mismatch: simulated {simulated.y.T.shape}, observed {observed.shape}. Skipping...")
         return float('inf')
+
+    # observed = (observed - np.mean(observed, axis=0)) / np.std(observed, axis=0)
+    # simulated = (simulated.y.T - np.mean(simulated.y.T, axis=0)) / np.std(simulated.y.T, axis=0)
     return np.mean((simulated.y.T - observed) ** 2)
 
 

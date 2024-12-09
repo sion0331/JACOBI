@@ -4,8 +4,8 @@ from population.initial_generation import generate_population, manual_lotka_syst
 from utils.functions import get_functions, funcs_to_str
 
 from utils.load_systems import create_ode_function, load_systems
-from utils.models import lotka
-from utils.plots import plot_2d_by_func, plot_2d_by_y, plot_loss_by_iteration, plot_invalid_by_iteration
+from utils.models import lotka, SIR
+from utils.plots import plot_2d_by_func, plot_2d_by_y, plot_loss_by_iteration, plot_invalid_by_iteration, plot_time_series, new_plot
 import matplotlib.pyplot as plt
 import warnings
 
@@ -14,13 +14,13 @@ class Config:
     def __init__(self):
         self.target = lotka()
 
-        self.G = 10  # Number of generations
-        self.N = 50  # Maximum number of population
+        self.G = 3  # Number of generations
+        self.N = 1000  # Maximum number of population
         self.M = 2  # Maximum number of equations
         self.I = 2  # Maximum number of terms per equation
         self.J = 2  # Maximum number of functions per feature
         self.allow_composite = False  # Composite Functions
-        self.f0ps = get_functions("5")
+        self.f0ps = get_functions("1,5,6")
         self.ivp_method = 'Radau'
         self.minimize_method = 'Nelder-Mead'
 
@@ -29,7 +29,7 @@ class Config:
         self.mutation_rate = 0.3
         self.new_rate = 0.2
 
-        self.system_load_dir = 'data/differential_equations.txt'  # 'data/lotka_equations.txt'
+        self.system_load_dir = 'data/differential_equations.txt'
         self.system_save_dir = 'data/differential_equations.txt'
 
         self.DEBUG = False
@@ -46,7 +46,7 @@ def main():
     #                         TARGET DATA                                 #
     #######################################################################
 
-    t = np.linspace(0, 10, 100)
+    t = np.linspace(0, 100, 1000)
     X0 = np.random.rand(config.target.N) + 1.0  # 1.0~2.0
     print(f"true_betas: {config.target.betas} | Initial Condition: {X0}")
 
@@ -119,6 +119,7 @@ def main():
     print(f'\nBest | Loss:{best[0].fun} func: {best[1]} param:{best[0].x}')
 
     # TODO - test with new target data
+    print("initial   ", X0)
     y_best = solve_ivp(best[2], (t[0], t[-1]), X0, args=tuple(best[0].x), t_eval=t, method=config.ivp_method).y.T
     fig, axs = plt.subplots(2, 2, figsize=(12, 9))
     plot_2d_by_func(axs[0, 0], config.target.func, config.target.betas)
@@ -132,6 +133,10 @@ def main():
     fig.text(0.03, 0.08, note, va='top', fontsize=10, bbox=dict(facecolor='white', alpha=0.8))
     plt.tight_layout(rect=[0, 0.1, 1, 1])
     plt.show()
+
+    # fig, axs = plt.subplots(3, 2, figsize=(15, 15))  # Increase figure size
+    # plot_time_series(t, y_raw, y_target, y_best)
+    # new_plot(t, y_raw, y_target, y_best)
 
 
 if __name__ == "__main__":
