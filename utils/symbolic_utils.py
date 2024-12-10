@@ -1,8 +1,6 @@
 import sympy as sp
 import time
 
-from jupyterlab.utils import deprecated
-
 t = sp.Symbol('t')
 
 def create_variable(i):
@@ -23,7 +21,6 @@ def o(j):
     }
     return switcher_o.get(j, "Invalid")
 
-@deprecated
 def is_redundant(system, population):
     for p in population:
         check = True
