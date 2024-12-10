@@ -14,20 +14,20 @@ class Config:
     def __init__(self):
         self.target = lotka()
 
-        self.G = 20  # Number of generations
-        self.N = 50  # Maximum number of population
+        self.G = 1  # Number of generations
+        self.N = 5  # Maximum number of population
         self.M = 2  # Maximum number of equations
         self.I = 2  # Maximum number of terms per equation
         self.J = 2  # Maximum number of functions per feature
         self.allow_composite = False  # Composite Functions
-        self.f0ps = get_functions("1,2,4,5,6")
+        self.f0ps = get_functions("1,2,4,5")
         self.ivp_method = 'Radau'
         self.minimize_method = 'Nelder-Mead'
 
         self.elite_rate = 0.1
-        self.crossover_rate = 0.4
-        self.mutation_rate = 0.4
-        self.new_rate = 0.1
+        self.crossover_rate = 0.2
+        self.mutation_rate = 0.5
+        self.new_rate = 0.2
 
         self.system_load_dir = 'data/differential_equations.txt'
         self.system_save_dir = 'data/differential_equations.txt'
@@ -46,14 +46,15 @@ def main():
     #                         TARGET DATA                                 #
     #######################################################################
 
-    t = np.linspace(0, 10, 100)
-    X0 = np.random.rand(config.target.N) + 1.0  # 1.0~2.0
-    # X0 = [997, 3, 0]  # 1.0~2.0
+    t = np.linspace(0, 30, 300)
+    # X0 = np.random.rand(config.target.N) + 1.0  # 1.0~2.0
+    X0 = [1.8, 1.3]
+    # X0 = [997, 3, 0]  # SIR
     print(f"true_betas: {config.target.betas} | Initial Condition: {X0}")
 
     y_raw = solve_ivp(config.target.func, (t[0], t[-1]), X0, args=config.target.betas, t_eval=t,
                       method=config.ivp_method).y.T
-    y_target = y_raw + np.random.normal(0.0, 0.002, y_raw.shape) #0.02
+    y_target = y_raw + np.random.normal(0.0, 0.005, y_raw.shape) #0.02
 
     #######################################################################
     #                         INITIAL POPULATION                          #

@@ -36,7 +36,7 @@ def cube(x):
 def quart(x):
     return x ** 4
 
-
+# todo add log
 all_functions = {
     0: ("one", one),
     1: ("sin", sin),

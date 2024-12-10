@@ -1,9 +1,13 @@
 import copy
 import random as rd
 import sympy as sp
-from utils.symbolic_utils import t, create_variable, o, is_redundant
-from utils.functions import f
+import time
+from utils.symbolic_utils import t, create_variable, o, is_redundant, is_redundant_optimized
+from utils.functions import f, funcs_to_str
 from utils.numpy_conversion import save_systems_as_numpy_funcs
+import pandas as pd
+
+from utils.term_map import get_term_id, get_term_map
 
 
 def generate_population(config):
@@ -27,9 +31,15 @@ def generate_systems(N, config):
     variables = [create_variable(i) for i in range(1, config.M + 1)]
     v = copy.deepcopy(variables)
 
+    time_record = []
+    count_redundant = 0
+    start_time = time.time()
+
+    systems_map = []
     systems = []
     n = 0
-    while n<N:
+    while n < N:
+        s_map = []
         system = []
         for m in range(config.M):
             terms = []
@@ -38,10 +48,21 @@ def generate_systems(N, config):
                 if term is not None and not term in terms:
                     terms.append(term)
             system.append([sp.diff(variables[m], t), terms])
+            s_map.append(sorted([get_term_id(term) for term in terms]))
 
-        if not is_redundant(system, systems):
+        if not is_redundant_optimized(s_map, systems_map):
             systems.append(system)
-            n+=1
+            systems_map.append(s_map)
+            n += 1
+            # if n%10==0: print(n, time.time() - start_time)
+            time_record.append({'n': n, 'duplicate': count_redundant, 'ts': time.time() - start_time})
+            start_time = time.time()
+            count_redundant=0
+        else:
+            count_redundant += 1
+
+    df = pd.DataFrame(time_record)
+    df.to_csv(f"./data/{funcs_to_str(config.f0ps)}_opt_time.csv", index=False)
 
     return systems
 

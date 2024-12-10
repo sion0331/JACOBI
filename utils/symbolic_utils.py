@@ -1,4 +1,7 @@
 import sympy as sp
+import time
+
+from jupyterlab.utils import deprecated
 
 t = sp.Symbol('t')
 
@@ -20,6 +23,7 @@ def o(j):
     }
     return switcher_o.get(j, "Invalid")
 
+@deprecated
 def is_redundant(system, population):
     for p in population:
         check = True
@@ -28,7 +32,17 @@ def is_redundant(system, population):
                 check = False
                 break
         if check:
-            # print("## Redundant ###")
-            # print(system, "<>", p)
+            return True
+    return False
+
+def is_redundant_optimized(system, population):
+    for p in population:
+        check = True
+        for rhs1, rhs2 in zip(system, p):
+            if rhs1 != rhs2:
+                check = False
+                break
+        if check:
+            # print(system, p)
             return True
     return False
