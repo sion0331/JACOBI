@@ -14,8 +14,8 @@ class Config:
     def __init__(self):
         self.target = lotka()
 
-        self.G = 10  # Number of generations
-        self.N = 200  # Maximum number of population
+        self.G = 20  # Number of generations
+        self.N = 50  # Maximum number of population
         self.M = 2  # Maximum number of equations
         self.I = 2  # Maximum number of terms per equation
         self.J = 2  # Maximum number of functions per feature
@@ -46,7 +46,7 @@ def main():
     #                         TARGET DATA                                 #
     #######################################################################
 
-    t = np.linspace(0, 100, 500)
+    t = np.linspace(0, 10, 100)
     X0 = np.random.rand(config.target.N) + 1.0  # 1.0~2.0
     # X0 = [997, 3, 0]  # 1.0~2.0
     print(f"true_betas: {config.target.betas} | Initial Condition: {X0}")

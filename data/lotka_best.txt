@@ -60,3 +60,7 @@ def eq_3_1(X, betas, t):
 
 def system_3(X, betas, t):
     return np.array([eq_3_0(X, betas, t), eq_3_1(X, betas, t)])
+
+
+
+# ### Generation 9 #0 | Error: 0.1321 | System: ['dx_1(t)/dt = beta_0*(x_1²/x_2²) + beta_1*(x_2²)', 'dx_2(t)/dt = beta_2*(cos(x_2)) + beta_3*(exp(-x_1)*exp(x_2))'] | Solved Parameters: [ 0.08623023 -1.11608739  0.56237071 -0.69114126]
