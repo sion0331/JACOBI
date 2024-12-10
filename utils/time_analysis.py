@@ -15,19 +15,21 @@ for filename in os.listdir(directory):
         df['cumulative_duplicate'] = df['duplicate'].cumsum()
 
         tag = filename.split('_')
+
+        if tag[1] == 'opt': continue
         records.append({
-            'func': tag[0] if tag[1] !='opt' else tag[0]+"(Hashed)",
+            'func': "["+tag[0]+"]" if tag[1] !='opt' else tag[0]+"(Hashed)",
             'df': df,
         })
 
 plt.figure(figsize=(12, 7))
 for record in records:
-    # plt.plot(record['df']['n'], record['df']['cumulative_ts'], label=record['func'] + '_Cumulative Execution Time')
-    plt.plot(record['df']['n'], record['df']['cumulative_duplicate'],
-             label=record['func'] + '_Cumulative Duplicate Count')
+    plt.plot(record['df']['n'], record['df']['cumulative_ts'], label=record['func'])
+    # plt.plot(record['df']['n'], record['df']['cumulative_duplicate'],
+    #          label=record['func'] + '_Cumulative Duplicate Count')
 
-plt.xlabel('Number of Systems (n)')
-plt.ylabel('Execution Time (seconds)')
+plt.xlabel('Number of Systems')
+plt.ylabel('Cumulative Execution Time (seconds)')
 plt.title('Execution Time vs. Number of Systems')
 plt.grid(True)
 plt.legend()
