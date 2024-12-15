@@ -1,6 +1,6 @@
 from population.genetic_algorithm import generate_new_population
 from evaluators.parameter_estimation import *
-from population.initial_generation import generate_population, beautify_system
+from population.initial_generation import generate_population, beautify_system, manual_sir_systems
 from utils.functions import get_functions, funcs_to_str
 from utils.history import save_history
 
@@ -17,8 +17,8 @@ class Config:
     def __init__(self):
         self.target = SIR()
 
-        self.G = 10  # Number of generations
-        self.N = 50  # Maximum number of population
+        self.G = 20  # Number of generations
+        self.N = 200  # Maximum number of population
         self.M = 3  # Maximum number of equations
         self.I = 2  # Maximum number of terms per equation
         self.J = 2  # Maximum number of functions per feature
