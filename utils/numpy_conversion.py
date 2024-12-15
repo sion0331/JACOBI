@@ -43,7 +43,8 @@ def save_str_systems_as_numpy_funcs(systems, filename):
                             'x_4(t)', 'x_4').replace('x_5(t)', 'x_5')
                         term_str = term_str.replace('sin', 'np.sin').replace('cos', 'np.cos').replace('tan',
                                                                                                       'np.tan').replace(
-                            'exp', 'np.exp')
+                            'exp', 'np.exp').replace(
+                            'log', 'np.log')
                         terms.append(f"betas[{j}] * ({term_str})")
                         j += 1
 
@@ -90,7 +91,8 @@ def save_systems_as_numpy_funcs(systems, filename):
                             'x_4(t)', 'x_4').replace('x_5(t)', 'x_5')
                         term_str = term_str.replace('sin', 'np.sin').replace('cos', 'np.cos').replace('tan',
                                                                                                       'np.tan').replace(
-                            'exp', 'np.exp')
+                            'exp', 'np.exp').replace(
+                            'log', 'np.log')
                         terms.append(f"betas[{j}] * ({term_str})")
                         j += 1
 

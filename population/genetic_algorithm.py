@@ -25,8 +25,7 @@ def generate_new_population(history, population, config):
     ranked_indices = np.argsort(scores)  # Indices of sorted scores
     ranks = np.argsort(ranked_indices) + 1  # Assign ranks (1 = best)
 
-    gamma = 0.9 # todo - tune as hyperparmeter
-    weights = [gamma ** (rank - 1) for rank in ranks]
+    weights = [config.selection_gamma ** (rank - 1) for rank in ranks]
     probabilities = np.array(weights) / sum(weights)
 
     # elites

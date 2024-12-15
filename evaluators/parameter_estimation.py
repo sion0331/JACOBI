@@ -7,11 +7,12 @@ from scipy.optimize import minimize, OptimizeResult
 def simulate_system(ode_func, X0, t, betas, method, DEBUG):
     """Simulate the system using the given parameters."""
     start_time = time.time()
-    timeout = 3
+    timeout = 10 # todo - need finetuning?
 
     def stop_event(*args):
         ts = (time.time() - start_time)
         if ts > timeout:
+            print("stop_event: ", ts, " | ", ts > timeout)
             if DEBUG: print(f'solve_vip exceeded timeout: {ts} > {timeout}')
             raise TookTooLong()
         return timeout - ts
@@ -20,7 +21,8 @@ def simulate_system(ode_func, X0, t, betas, method, DEBUG):
 
     try:
         return solve_ivp(ode_func, (t[0], t[-1]), X0, t_eval=t, args=betas, method=method, events=stop_event)
-    except:
+    except Exception as error:
+        # if DEBUG: print("simulate_system error: ", error, betas)
         return None
 
 
@@ -56,11 +58,12 @@ def estimate_parameters(ode_func, X0, t, observed_data, initial_guess, min_metho
             initial_guess,
             args=(ode_func, X0, t, observed_data, ivp_method, DEBUG),
             method=min_method,
-            tol=1e-6,
+            # tol=1e-6,   #todo - need tuning?
             options={'maxiter': 1000},  # 'disp': True, 'gtol': 1e-6, 'eps': 1e-10}
             callback=OptimizeStopper(DEBUG, 30)
         )
     except TookTooLong as e:
+        print("estimate_parameters error")
         return OptimizeResult(fun=float('inf'), x=None, success=False, message=str(e))
 
     if DEBUG: print("estimated parameters: ", result)

@@ -12,6 +12,7 @@ class lotka():
     def __init__(self):
         self.func = lotka_func
         self.N = 2
+        self.X0 = [1.8, 1.3]
         self.betas = [2 / 3, -4 / 3, -1, 1]
 
 
@@ -27,4 +28,5 @@ class SIR():
     def __init__(self):
         self.func = sir_func
         self.N = 3
+        self.X0 = [997, 3, 0]
         self.betas = [-0.0002, 0.0002, -0.04, 0.04]

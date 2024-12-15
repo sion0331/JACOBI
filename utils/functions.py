@@ -69,8 +69,6 @@ def get_allowed_functions():
 def get_functions(selected_functions):
     selected_functions = selected_functions.replace("[", "").replace("]", "")
     funcs = [int(x.strip()) for x in selected_functions.split(',')]
-    func_str = funcs_to_str(funcs)
-    # print(f"Allowed Functions: {func_str}")
     return funcs
 
 
