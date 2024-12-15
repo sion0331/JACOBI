@@ -1,0 +1,110 @@
+import numpy as np
+from math import exp, sin, cos
+
+
+# Linear
+def eq_0_0(X, betas, t):
+    # dx_1(t)/dt = beta_0*(x_1) + beta_1*(x_1*x_2)
+    x_1, x_2 = X
+    return 0.6672335 * (x_1) -1.33321227 * (x_1) * (x_2)
+
+def eq_0_1(X, betas, t):
+    # dx_2(t)/dt = beta_2*(x_1*x_2) + beta_3*(x_2)'
+    x_1, x_2 = X
+    return 0.99907589 * (x_1) * (x_2) -0.99892297 * (x_2)
+
+def system_0(X, betas, t):
+    return np.array([eq_0_0(X, betas, t), eq_0_1(X, betas, t)])
+
+
+# Linear, exp / 'Score': 0.030983819716853784
+def eq_1_0(X, betas, t):
+    # dx_1(t)/dt = beta_0*(x_2) + beta_1*(exp(x_2))
+    x_1, x_2 = X
+    return -2.56400467 * (x_2) + 0.62604834 * exp(x_2)
+
+def eq_1_1(X, betas, t):
+    # dx_2(t)/dt = beta_2*(x_2) + beta_3*(x_2*exp(x_1))
+    x_1, x_2 = X
+    return -1.35433459 * (x_2) + 0.36652549 * (x_2)*exp(x_1)
+
+def system_1(X, betas, t):
+    return np.array([eq_1_0(X, betas, t), eq_1_1(X, betas, t)])
+
+
+# Linear, exp, sin / 'Score': 2.4938344071405825e-05
+def eq_2_0(X, betas, t):
+    # dx_1(t)/dt = beta_0*(x_1) + beta_1*(x_1*x_2)
+    x_1, x_2 = X
+    return -1.3330504 * (x_1) * (x_2) + 0.66660187* (x_1)
+
+def eq_2_1(X, betas, t):
+    # dx_2(t)/dt = beta_2*(x_1*x_2) + beta_3*(x_2)
+    x_1, x_2 = X
+    return -0.99984385 * (x_2) + 0.99952762 * (x_1) * (x_2)
+
+def system_2(X, betas, t):
+    return np.array([eq_2_0(X, betas, t), eq_2_1(X, betas, t)])
+
+
+# Linear, exp, sin, cos / 'Score': 0.0004281683140423707
+def eq_3_0(X, betas, t):
+    # dx_1(t)/dt = beta_0*(x_1) + beta_1*(x_1*x_2)
+    x_1, x_2 = X
+    return 0.63468949 * (x_2) - 1.30224169* (x_1)*(x_2)
+
+def eq_3_1(X, betas, t):
+    # dx_2(t)/dt = beta_2*(x_1*sin(x_2)) + beta_3*(sin(x_2))
+    x_1, x_2 = X
+    return 1.17148193 * (x_1) * sin(x_2) - 1.17248918 * sin(x_2)
+
+def system_3(X, betas, t):
+    return np.array([eq_3_0(X, betas, t), eq_3_1(X, betas, t)])
+
+
+# Linear, exp, sin, cos, log / 'Score': 0.023684003045158396
+def eq_4_0(X, betas, t):
+    # dx_1(t)/dt = beta_0*(x_2) + beta_1*(cos(x_2))
+    x_1, x_2 = X
+    return -0.92501688 * (x_2) + 0.58515934 * cos(x_2)
+
+def eq_4_1(X, betas, t):
+    # dx_2(t)/dt = beta_2*(x_2*exp(x_1)) + beta_3*(x_2)
+    x_1, x_2 = X
+    return 0.28991055 * (x_2) * exp(x_1) - 1.01257618 * (x_2)
+
+def system_4(X, betas, t):
+    return np.array([eq_4_0(X, betas, t), eq_4_1(X, betas, t)])
+
+
+# Linear, exp, sin, square, log, square / 'Score': 0.005675322454859041
+def eq_5_0(X, betas, t):
+    # dx_1(t)/dt = beta_0*(x_1*x_2²) + beta_1*(x_1)
+    x_1, x_2 = X
+    return -1.04301212 * (x_1) * (x_2**2) + 0.48477315 * (x_1)
+
+def eq_5_1(X, betas, t):
+    # dx_2(t)/dt = beta_2*(x_2) + beta_3*(x_1*x_2)
+    x_1, x_2 = X
+    return -0.79781205 * (x_2) + 0.79814196 * (x_1) * (x_2)
+
+def system_5(X, betas, t):
+    return np.array([eq_5_0(X, betas, t), eq_5_1(X, betas, t)])
+
+
+# Linear, exp, sin, square, log, square, tan / 'Score': 0.052787347873141134
+def eq_6_0(X, betas, t):
+    # dx_1(t)/dt = beta_0*(x_1*x_2) + beta_1*(x_1)
+    x_1, x_2 = X
+    return -1.0434937 * (x_1) * (x_2) + 0.59863839 * (x_1)
+
+def eq_6_1(X, betas, t):
+    # beta_2*(x_2) + beta_3*(x_2/x_1)
+    x_1, x_2 = X
+    return 1.11990903 * (x_2) - 0.69920275 * (x_2) / (x_1)
+
+def system_6(X, betas, t):
+    return np.array([eq_6_0(X, betas, t), eq_6_1(X, betas, t)])
+
+
+

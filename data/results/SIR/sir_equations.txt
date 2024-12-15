@@ -1,0 +1,19 @@
+import numpy as np
+
+def eq_0_0(X, betas, t):
+    # dx_1/dt = [x_1(t), (x_1) * (x_2)]
+    x_1, x_2, x_3 = X
+    return betas[0] * (x_1) * (x_2)
+
+def eq_0_1(X, betas, t):
+    # dx_2/dt = [x_2(t), x_1(t) * x_2(t)]
+    x_1, x_2, x_3 = X
+    return betas[1] * (x_2) + betas[2] * (x_1) * (x_2)
+
+def eq_0_2(X, betas, t):
+    # dx_2/dt = [x_2(t), x_1(t) * x_2(t)]
+    x_1, x_2, x_3 = X
+    return betas[3] * (x_2)
+
+def system_0(X, betas, t):
+    return np.array([eq_0_0(X, betas, t), eq_0_1(X, betas, t), eq_0_2(X, betas, t)])

@@ -1,13 +1,11 @@
 import copy
 import random as rd
 import sympy as sp
-import time
-from utils.symbolic_utils import t, create_variable, o, is_redundant, is_redundant_optimized
-from utils.functions import f, funcs_to_str
+from utils.symbolic_utils import t, create_variable, o
+from utils.functions import f
 from utils.numpy_conversion import save_systems_as_numpy_funcs
-import pandas as pd
 
-from utils.term_map import get_term_id, get_term_map
+from utils.mapping import convert_system_to_hash
 
 
 def generate_population(config):
@@ -31,15 +29,10 @@ def generate_systems(N, config):
     variables = [create_variable(i) for i in range(1, config.M + 1)]
     v = copy.deepcopy(variables)
 
-    time_record = []
-    count_redundant = 0
-    start_time = time.time()
-
-    systems_map = []
+    systems_hash_list = []
     systems = []
     n = 0
     while n < N:
-        s_map = []
         system = []
         for m in range(config.M):
             terms = []
@@ -48,43 +41,37 @@ def generate_systems(N, config):
                 if term is not None and not term in terms:
                     terms.append(term)
             system.append([sp.diff(variables[m], t), terms])
-            s_map.append(sorted([get_term_id(term) for term in terms]))
 
-        if not is_redundant_optimized(s_map, systems_map):
+        s_hash = convert_system_to_hash(system)
+        if not s_hash in systems_hash_list:
             systems.append(system)
-            systems_map.append(s_map)
+            systems_hash_list.append(s_hash)
             n += 1
-            # if n%10==0: print(n, time.time() - start_time)
-            time_record.append({'n': n, 'duplicate': count_redundant, 'ts': time.time() - start_time})
-            start_time = time.time()
-            count_redundant=0
-        else:
-            count_redundant += 1
-
-    df = pd.DataFrame(time_record)
-    df.to_csv(f"./data/{funcs_to_str(config.f0ps)}_opt_time.csv", index=False)
 
     return systems
 
 
 def generate_term(variables, config, non_empty):
-    rd.shuffle(variables)  # O(logN)
+    rd.shuffle(variables)
     term = None
     var_list = []
     j = 0
-    for var in variables:
-        # equation to have at least one term
-        if (non_empty and j == 0) or rd.randint(0, 1) == 1:
-            func = f(rd.choice(config.f0ps))
-            var = func(var)
-            j += 1
-            if config.allow_composite and j < config.J:  # limit applying composite to only once
-                if rd.randint(0, 1) == 1:
-                    func = f(rd.choice(config.fOps))
-                    var = func(var)
-                    j += 1
-            var_list.append(var)
-            if j == config.J: break
+
+    weights = [1 / len(config.f0ps)] * len(config.f0ps) # todo - term distribution /  [0.5 if op == 5 else 0.2 / (len(config.f0ps) - 1) for op in config.f0ps]
+    if non_empty or rd.randint(0, 1) == 1: # equation to have at least one term
+        for var in variables:
+            if j == 0 or rd.randint(0, 1) == 1:
+
+                func = f(rd.choices(config.f0ps, weights=weights, k=1)[0])# todo
+                var = func(var)
+                j += 1
+                if config.allow_composite and j < config.J:  # limit applying composite to only once
+                    if rd.randint(0, 1) == 1:
+                        func = f(rd.choices(config.fOps, weights=weights, k=1)[0])
+                        var = func(var)
+                        j += 1
+                var_list.append(var)
+                if j == config.J: break
 
     if var_list:
         term = var_list[0]
@@ -137,6 +124,32 @@ def beautify_system(system):
 
     return beautified_equations
 
+
+def manual_sir_systems():
+    variables = [create_variable(i) for i in range(1, 4)]
+    linear = f(5)
+    mult = o(0)
+    div = o(1)
+
+    system0 = [
+        [sp.diff(variables[0], t),
+         [
+             mult(linear(variables[0]), linear(variables[1]))
+         ]
+         ],
+        [sp.diff(variables[1], t),
+         [
+             mult(linear(variables[0]), linear(variables[1])),
+             linear(variables[1]),
+         ]
+         ],
+        [sp.diff(variables[2], t),
+         [
+             linear(variables[1])
+         ]
+         ],
+    ]
+    return [system0]
 
 def manual_lotka_systems():
     variables = [create_variable(i) for i in range(1, 3)]
@@ -215,4 +228,6 @@ def manual_lotka_systems():
          ]
          ]
     ]
-    return [system0, system1, system2, system3, system4]
+    return [system0, system1, system2, system3]
+
+    # return [system0, system1, system2, system3, system4]

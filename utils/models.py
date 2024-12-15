@@ -15,11 +15,11 @@ class lotka():
         self.betas = [2 / 3, -4 / 3, -1, 1]
 
 
-def sir_func(t, X, beta, gamma):
+def sir_func(t, X, b1, b2, b3, b4):
     S, I, R = X
-    dotS = (-1) * beta * S * I
-    dotI = beta * S * I - gamma * I
-    dotR = gamma * I
+    dotS = b1 * S * I
+    dotI = b2 * S * I + b3 * I
+    dotR = b4 * I
     return np.array([dotS, dotI, dotR])
 
 
@@ -27,9 +27,4 @@ class SIR():
     def __init__(self):
         self.func = sir_func
         self.N = 3
-        self.beta = 0.5 #0.5~0.12
-        self.gamma = 0.04
-        self.betas = [self.beta, self.gamma]
-
-    def get_params(self):
-        return self.beta, self.gamma
+        self.betas = [-0.0002, 0.0002, -0.04, 0.04]

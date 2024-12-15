@@ -37,7 +37,7 @@ def calculate_error(simulated, observed, DEBUG):
 
 def objective_function(betas, ode_func, X0, t, observed_data, ivp_method, DEBUG):
     """Objective function to minimize: the error between simulated and observed data."""
-    w_reg = 0.00  # TODO tune as parameter
+    w_reg = 0.01 # todo finetune
     simulated = simulate_system(ode_func, X0, t, tuple(betas), ivp_method, DEBUG)
     if simulated is None:
         if DEBUG: print("SOLVE_IVP FAILED")

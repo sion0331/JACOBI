@@ -1,0 +1,42 @@
+import numpy as np
+from math import exp, sin, cos, tan
+
+
+# Linear
+def eq_0_0(X, betas, t):
+    # 'dx_1(t)/dt = beta_0*(x_1*x_2)'
+    x_1, x_2, x_3 = X
+    return -2.00000216e-04 * (x_1)*(x_2)
+
+def eq_0_1(X, betas, t):
+    # dx_2(t)/dt = beta_1*(x_1*x_2) + beta_2*(x_2)
+    x_1, x_2, x_3 = X
+    return 1.99999857e-04 * (x_1)*(x_2) +  -3.99999443e-02 * (x_2)
+
+def eq_0_2(X, betas, t):
+    # dx_3(t)/dt = beta_3*(x_1*x_2) + beta_4*(x_2)
+    x_1, x_2, x_3 = X
+    return 1.47352392e-11*(x_1)*(x_2) + 4.00000322e-02 * (x_2)
+
+def system_0(X, betas, t):
+    return np.array([eq_0_0(X, betas, t), eq_0_1(X, betas, t), eq_0_2(X, betas, t)])
+
+
+# Linear, exp // 12.092309015956351
+def eq_1_0(X, betas, t):
+    # dx_1(t)/dt = beta_0*(x_2) + beta_1*(x_1*x_3)
+    x_1, x_2, x_3 = X
+    return 0.08424986 * (x_2) - 0.00096104*(x_1)*(x_3)
+
+def eq_1_1(X, betas, t):
+    # dx_2(t)/dt = beta_2*(x_2) + beta_3*(x_1*x_3)
+    x_1, x_2, x_3 = X
+    return -0.12371369 * (x_2) + 0.00095854 * (x_1) * (x_3)
+
+def eq_1_2(X, betas, t):
+    # dx_3(t)/dt = beta_4*(x_2) + beta_5*(x_1*exp(-x_2))
+    x_1, x_2, x_3 = X
+    return 0.03989038 * (x_2) + 0.01642087 * (x_1) * exp(-x_2)
+
+def system_1(X, betas, t):
+    return np.array([eq_1_0(X, betas, t), eq_1_1(X, betas, t), eq_1_2(X, betas, t)])

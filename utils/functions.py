@@ -36,6 +36,11 @@ def cube(x):
 def quart(x):
     return x ** 4
 
+
+def log(x):
+    return sp.log(x)
+
+
 # todo add log
 all_functions = {
     0: ("one", one),
@@ -46,7 +51,8 @@ all_functions = {
     5: ("linear", linear),
     6: ("square", square),
     7: ("cube", cube),
-    8: ("quart", quart)
+    8: ("quart", quart),
+    9: ("log", log)
 }
 
 
