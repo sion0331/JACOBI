@@ -30,3 +30,19 @@ class SIR():
         self.N = 3
         self.X0 = [997, 3, 0]
         self.betas = [-0.0002, 0.0002, -0.04, 0.04]
+
+
+def lorenz_func(t, X, sigma, rho, beta):
+    x, y, z = X
+    dotx = sigma * (y - x)
+    doty = x * (rho - z) - y
+    dotz = x * y - beta * z
+    return np.array([dotx, doty, dotz])
+
+
+class lorenz():
+    def __init__(self):
+        self.func = lorenz_func
+        self.N = 3
+        self.X0 = [0.0, 1.0, 2.0]
+        self.betas = [10.0, 28.0, 8/3]

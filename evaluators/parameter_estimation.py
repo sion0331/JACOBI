@@ -39,7 +39,7 @@ def calculate_error(simulated, observed, DEBUG):
 
 def objective_function(betas, ode_func, X0, t, observed_data, ivp_method, DEBUG):
     """Objective function to minimize: the error between simulated and observed data."""
-    w_reg = 0.01 # todo finetune
+    w_reg = 0.00 # todo finetune
     simulated = simulate_system(ode_func, X0, t, tuple(betas), ivp_method, DEBUG)
     if simulated is None:
         if DEBUG: print("SOLVE_IVP FAILED")
@@ -52,9 +52,22 @@ def objective_function(betas, ode_func, X0, t, observed_data, ivp_method, DEBUG)
 
 def estimate_parameters(ode_func, X0, t, observed_data, initial_guess, min_method, ivp_method, DEBUG):
     """Estimate the parameters using scipy's minimize function."""
+    best_error = float('inf')
+    best_params = None
+
+    def objective_with_tracking(params, ode_func, X0, t, observed_data, ivp_method, DEBUG):
+        """Modified objective function to track the best parameters."""
+        nonlocal best_error, best_params
+
+        error = objective_function(params, ode_func, X0, t, observed_data, ivp_method, DEBUG)
+        if error < best_error:
+            best_error = error
+            best_params = params.copy()
+        return error
+
     try:
         result = minimize(
-            objective_function,
+            objective_with_tracking,
             initial_guess,
             args=(ode_func, X0, t, observed_data, ivp_method, DEBUG),
             method=min_method,
@@ -63,8 +76,8 @@ def estimate_parameters(ode_func, X0, t, observed_data, initial_guess, min_metho
             callback=OptimizeStopper(DEBUG, 30)
         )
     except TookTooLong as e:
-        print("estimate_parameters error")
-        return OptimizeResult(fun=float('inf'), x=None, success=False, message=str(e))
+        print("Optimization terminated due to time limit")
+        return OptimizeResult(fun=best_error, x=best_params, success=False, message="Optimization terminated due to time limit")
 
     if DEBUG: print("estimated parameters: ", result)
     return result

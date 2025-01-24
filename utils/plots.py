@@ -195,3 +195,16 @@ def plot_3d_by_y(axs, t, y_target, y_best, labels):
     axs.set_xlabel('Time')
     axs.set_ylabel('Value')
     axs.legend()
+
+
+def plot_lorenz_3d(axs, t, x0, ys, results, labels, title):
+    plt.figure(figsize=(10, 10)).add_subplot(projection='3d')
+    plt.plot(ys[:, 0], ys[:, 1], ys[:, 2], label="Target")
+    for y, label in zip(results, labels):
+        plt.plot(y[:, 0], y[:, 1], y[:, 2], label=label)
+
+    plt.xlabel("X Axis")
+    plt.ylabel("Y Axis")
+    plt.title("Lorenz Attractor")
+    plt.legend()
+    plt.show()

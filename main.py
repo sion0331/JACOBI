@@ -1,31 +1,32 @@
 from population.genetic_algorithm import generate_new_population
 from evaluators.parameter_estimation import *
-from population.initial_generation import generate_population, beautify_system, manual_sir_systems
+from population.initial_generation import generate_population, beautify_system, manual_sir_systems, \
+    manual_lorenz_systems, manual_lotka_systems
 from utils.functions import get_functions, funcs_to_str
 from utils.history import save_history
 
 from utils.load_systems import create_ode_function, load_systems
 from utils.mapping import get_individual_solved, add_individual_solved, \
-    get_solved_map, get_term_map, convert_system_to_hash
-from utils.models import SIR
+    get_solved_map, get_term_map, convert_system_to_hash, count_betas
+from utils.models import SIR, lorenz
 from utils.plots import plot_loss_by_iteration, plot_invalid_by_iteration, \
-    plot_3d_by_y
+    plot_3d_by_y, plot_lorenz_3d
 import matplotlib.pyplot as plt
 import warnings
 
 class Config:
     def __init__(self):
-        self.target = SIR()
+        self.target = lorenz()
 
-        self.G = 20  # Number of generations
-        self.N = 200  # Maximum number of population
+        self.G = 3  # Number of generations
+        self.N = 300  # Maximum number of population
         self.M = 3  # Maximum number of equations
-        self.I = 2  # Maximum number of terms per equation
+        self.I = 3  # Maximum number of terms per equation
         self.J = 2  # Maximum number of functions per feature
         self.allow_composite = False  # Composite Functions
-        self.f0ps = get_functions("4,5,6,9")
-        self.ivp_method = 'Radau'
-        self.minimize_method = 'Nelder-Mead' # L-BFGS-B, COBYLA, COBYQA, TNC
+        self.f0ps = get_functions("5")
+        self.ivp_method = 'Radau' # RK45 RK23 DOP853 Radau BDF LSODA
+        self.minimize_method = 'BFGS' #'Nelder-Mead' # L-BFGS-B, COBYLA, COBYQA, TNC
 
         self.elite_rate = 0.1
         self.crossover_rate = 0.3
@@ -34,7 +35,7 @@ class Config:
 
         self.selection_gamma = 0.9
 
-        self.system_load_dir = 'data/differential_equations.txt' #data/results/SIR/sir_equations.txt'
+        self.system_load_dir = 'data/differential_equations.txt' # 'data/results/lorenz/lorenz_equations.txt'
         self.system_save_dir = 'data/differential_equations.txt'
 
         self.DEBUG = False
@@ -51,7 +52,7 @@ def main():
     #                         TARGET DATA                                 #
     #######################################################################
 
-    t = np.linspace(0, 100, 100)
+    t = np.linspace(0, 25, 1000)
     X0 = config.target.X0  # np.random.rand(config.target.N) + 1.0  # 1.0~2.0
     print(f"true_betas: {config.target.betas} | Initial Condition: {X0}")
 
@@ -63,7 +64,7 @@ def main():
     #                         INITIAL POPULATION                          #
     #######################################################################
 
-    population = generate_population(config) #manual_lotka_systems()
+    population = generate_population(config) # manual_lorenz_systems()
     systems = load_systems(config.system_load_dir)
 
     #######################################################################
@@ -86,7 +87,9 @@ def main():
 
                 if not solved:
                     ode_func = create_ode_function(system)
-                    initial_guess = np.zeros(config.I * config.M)
+                    num_betas = count_betas(population[j])
+                    initial_guess = np.ones(num_betas)
+                    # initial_guess = np.concatenate([[-10, 10, 28, -1, -1, 1, -8/3][:num_betas], np.zeros(max(0, num_betas - 7))])
                     solved = estimate_parameters(ode_func, X0, t, y_target, initial_guess , config.minimize_method,
                                                  config.ivp_method, config.DEBUG)
                     add_individual_solved(system_hash, solved)
@@ -142,6 +145,7 @@ def main():
     plt.tight_layout(rect=[0, 0.1, 1, 1])
     plt.show()
 
+    plot_lorenz_3d(axs[1, 1], t, X0, y_target, [y_best], ["Best Estimate"], "Lorenz System Estimates")
 
 if __name__ == "__main__":
     main()

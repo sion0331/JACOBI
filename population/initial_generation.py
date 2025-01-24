@@ -228,6 +228,33 @@ def manual_lotka_systems():
          ]
          ]
     ]
-    return [system0, system1, system2, system3]
+    return [system0, system1, system2, system3] # return [system0, system1, system2, system3, system4]
 
-    # return [system0, system1, system2, system3, system4]
+
+def manual_lorenz_systems():
+    variables = [create_variable(i) for i in range(1, 4)]
+    linear = f(5)
+    mult = o(0)
+
+    system0 = [
+        [sp.diff(variables[0], t),
+         [
+             linear(variables[0]),
+             linear(variables[1])
+         ]
+         ],
+        [sp.diff(variables[1], t),
+         [
+             linear(variables[0]),
+             mult(linear(variables[0]), linear(variables[2])),
+             linear(variables[1]),
+         ]
+         ],
+        [sp.diff(variables[2], t),
+         [
+             mult(linear(variables[0]), linear(variables[1])),
+             linear(variables[2])
+         ]
+         ],
+    ]
+    return [system0]

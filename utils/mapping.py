@@ -41,3 +41,6 @@ def get_term_id(term):
 
 def convert_system_to_hash(system):
     return hash(tuple(tuple(sorted([get_term_id(term) for term in eq[1]])) for eq in system))
+
+def count_betas(system):
+    return sum(len(eq[1]) for eq in system)
