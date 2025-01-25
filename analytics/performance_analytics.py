@@ -14,7 +14,7 @@ from utils.plots import plot_2d_by_func, plot_2d_by_y, \
     plot_time_per_generation, plot_3d_by_y, plot_3d_estimates
 
 if __name__ == "__main__":
-    target = "SIR"  # "SIR" #lotka
+    target = "lorenz"  # "SIR" #lotka
     histories = load_history(target)
 
     results = []

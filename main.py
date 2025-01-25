@@ -24,7 +24,7 @@ class Config:
         self.I = 3  # Maximum number of terms per equation
         self.J = 2  # Maximum number of functions per feature
         self.allow_composite = False  # Composite Functions
-        self.f0ps = get_functions("5")
+        self.f0ps = get_functions("5,4,2,1")
         self.ivp_method = 'Radau' # RK45 RK23 DOP853 Radau BDF LSODA
         self.minimize_method = 'BFGS' #'Nelder-Mead' # L-BFGS-B, COBYLA, COBYQA, TNC
 
@@ -88,7 +88,7 @@ def main():
                 if not solved:
                     ode_func = create_ode_function(system)
                     num_betas = count_betas(population[j])
-                    # initial_guess = np.ones(num_betas)
+                    initial_guess = np.zeros(num_betas)
                     initial_guess = np.concatenate([[-10, 10, 28, -1, -1, 1, -8/3][:num_betas], np.zeros(max(0, num_betas - 7))])
                     solved = estimate_parameters(ode_func, X0, t, y_target, initial_guess , config.minimize_method,
                                                  config.ivp_method, config.DEBUG)
@@ -126,7 +126,7 @@ def main():
                 best = individual
         min_loss.append(min(loss))
         avg_loss.append(np.mean([l for l in loss if l < 10000]))  # Exclude loss > 100
-        invalid.append(sum(l >= 10000 for l in loss))
+        invalid.append(sum(l >= 10000 for l in loss)) # todo - check inf
 
     print(f'\nBest | Loss:{best[0].fun} func: {best[1]} param:{best[0].x}')
 

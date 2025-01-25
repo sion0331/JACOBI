@@ -94,10 +94,10 @@ def crossover(parent1, parent2, config):
 
     for i in range(len(child)):
         # Randomly pick an equation from parent1 and parent2
-        eq1_idx = random.randint(0, len(parent1_copy) - 1)
-        eq2_idx = random.randint(0, len(parent2_copy) - 1)
-        eq1 = parent1_copy[eq1_idx]
-        eq2 = parent2_copy[eq2_idx]
+        # eq1_idx = random.randint(0, len(parent1_copy) - 1)
+        # eq2_idx = random.randint(0, len(parent2_copy) - 1)
+        eq1 = parent1_copy[i] # parent1_copy[eq1_idx]
+        eq2 = parent2_copy[i] # parent2_copy[eq2_idx]
 
         # eq1 = parent1_copy.pop(eq1_idx)
         # eq2 = parent2_copy.pop(eq2_idx)
@@ -145,7 +145,7 @@ def mutate(system, config):
             eq[1][term_idx] = new_term
 
         # Add a random term
-        if len(eq[1]) < config.I and random.randint(0, 99) < 30:
+        if len(eq[1]) < config.I and random.randint(0, 99) < 25:
             new_term = generate_term(variables, config, True)
             while new_term in eq[1]:
                 new_term = generate_term(variables, config, True)

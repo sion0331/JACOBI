@@ -58,8 +58,8 @@ def generate_term(variables, config, non_empty):
     j = 0
 
     weights = [1 / len(config.f0ps)] * len(config.f0ps) # todo - term distribution
-    weights = [0.8 if op == 5 else 0.2 / (len(config.f0ps) - 1) for op in config.f0ps]
-    if non_empty or rd.randint(0, 1) == 1: # equation to have at least one term
+    weights = [0.5 if op == 5 else 0.5 / (len(config.f0ps) - 1) for op in config.f0ps]
+    if non_empty or rd.randint(0, 99) < 75: # equation to have at least one term
         for var in variables:
             if j == 0 or rd.randint(0, 99) < 25:
                 func = f(rd.choices(config.f0ps, weights=weights, k=1)[0])# todo
