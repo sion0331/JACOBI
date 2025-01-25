@@ -57,16 +57,16 @@ def generate_term(variables, config, non_empty):
     var_list = []
     j = 0
 
-    weights = [1 / len(config.f0ps)] * len(config.f0ps) # todo - term distribution /  [0.5 if op == 5 else 0.2 / (len(config.f0ps) - 1) for op in config.f0ps]
+    weights = [1 / len(config.f0ps)] * len(config.f0ps) # todo - term distribution
+    weights = [0.8 if op == 5 else 0.2 / (len(config.f0ps) - 1) for op in config.f0ps]
     if non_empty or rd.randint(0, 1) == 1: # equation to have at least one term
         for var in variables:
-            if j == 0 or rd.randint(0, 1) == 1:
-
+            if j == 0 or rd.randint(0, 99) < 25:
                 func = f(rd.choices(config.f0ps, weights=weights, k=1)[0])# todo
                 var = func(var)
                 j += 1
                 if config.allow_composite and j < config.J:  # limit applying composite to only once
-                    if rd.randint(0, 1) == 1:
+                    if rd.randint(0, 99) < 25:
                         func = f(rd.choices(config.fOps, weights=weights, k=1)[0])
                         var = func(var)
                         j += 1

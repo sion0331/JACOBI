@@ -12,10 +12,9 @@ def simulate_system(ode_func, X0, t, betas, method, DEBUG):
     def stop_event(*args):
         ts = (time.time() - start_time)
         if ts > timeout:
-            print("stop_event: ", ts, " | ", ts > timeout)
-            if DEBUG: print(f'solve_vip exceeded timeout: {ts} > {timeout}')
+            if DEBUG: print(f'solve_ivp exceeded timeout: {ts} > {timeout}')
             raise TookTooLong()
-        return timeout - ts
+        return ts < timeout
 
     stop_event.terminal = True
 

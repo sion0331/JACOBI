@@ -18,7 +18,7 @@ class Config:
     def __init__(self):
         self.target = lorenz()
 
-        self.G = 3  # Number of generations
+        self.G = 20  # Number of generations
         self.N = 300  # Maximum number of population
         self.M = 3  # Maximum number of equations
         self.I = 3  # Maximum number of terms per equation
@@ -29,8 +29,8 @@ class Config:
         self.minimize_method = 'BFGS' #'Nelder-Mead' # L-BFGS-B, COBYLA, COBYQA, TNC
 
         self.elite_rate = 0.1
-        self.crossover_rate = 0.3
-        self.mutation_rate = 0.5
+        self.crossover_rate = 0.2
+        self.mutation_rate = 0.6
         self.new_rate = 0.1
 
         self.selection_gamma = 0.9
@@ -58,7 +58,7 @@ def main():
 
     y_raw = solve_ivp(config.target.func, (t[0], t[-1]), X0, args=config.target.betas, t_eval=t,
                       method=config.ivp_method).y.T
-    y_target = y_raw + np.random.normal(0.0, 0.005, y_raw.shape) #0.02
+    y_target = y_raw + np.random.normal(0.0, 0.2, y_raw.shape)
 
     #######################################################################
     #                         INITIAL POPULATION                          #
@@ -88,8 +88,8 @@ def main():
                 if not solved:
                     ode_func = create_ode_function(system)
                     num_betas = count_betas(population[j])
-                    initial_guess = np.ones(num_betas)
-                    # initial_guess = np.concatenate([[-10, 10, 28, -1, -1, 1, -8/3][:num_betas], np.zeros(max(0, num_betas - 7))])
+                    # initial_guess = np.ones(num_betas)
+                    initial_guess = np.concatenate([[-10, 10, 28, -1, -1, 1, -8/3][:num_betas], np.zeros(max(0, num_betas - 7))])
                     solved = estimate_parameters(ode_func, X0, t, y_target, initial_guess , config.minimize_method,
                                                  config.ivp_method, config.DEBUG)
                     add_individual_solved(system_hash, solved)
@@ -125,8 +125,8 @@ def main():
             if best is None or individual[0].fun < best[0].fun:
                 best = individual
         min_loss.append(min(loss))
-        avg_loss.append(np.mean([l for l in loss if l < 100]))  # Exclude loss > 100
-        invalid.append(sum(l >= 100 for l in loss))
+        avg_loss.append(np.mean([l for l in loss if l < 10000]))  # Exclude loss > 100
+        invalid.append(sum(l >= 10000 for l in loss))
 
     print(f'\nBest | Loss:{best[0].fun} func: {best[1]} param:{best[0].x}')
 

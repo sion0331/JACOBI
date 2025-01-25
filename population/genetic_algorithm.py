@@ -144,6 +144,14 @@ def mutate(system, config):
         else:
             eq[1][term_idx] = new_term
 
+        # Add a random term
+        if len(eq[1]) < config.I and random.randint(0, 99) < 30:
+            new_term = generate_term(variables, config, True)
+            while new_term in eq[1]:
+                new_term = generate_term(variables, config, True)
+            if new_term is not None:
+                eq[1].append(new_term)
+
         mutated_system[i] = eq
 
     if config.DEBUG:
